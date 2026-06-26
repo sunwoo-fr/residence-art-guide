@@ -1,0 +1,267 @@
+<div id="app"></div>
+
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --bg:#f4f4f3; --card:#ffffff; --note-bg:#efefee; --navy:#16213e;
+    --ink:#1c1c1c; --muted:#9b9b9b; --line:#e8e8e6;
+  }
+  html,body{ background:var(--bg); }
+  body{
+    font-family:"Apple SD Gothic Neo","Pretendard","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink); max-width:480px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:24px;
+  }
+  body.detail{ padding-bottom:88px; }
+  body.fr h1, body.fr .work-meta-title{ font-family:Georgia,"Times New Roman",serif; }
+
+  .topbar{ background:#0d0d0d; height:46px; display:flex; align-items:center; padding:0 18px; }
+  .back{ color:#fff; font-size:26px; line-height:1; cursor:pointer; opacity:.95; visibility:hidden; }
+  .back.show{ visibility:visible; }
+
+  header{ padding:20px 22px 0; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .kicker{ font-size:13px; color:var(--muted); letter-spacing:.5px; font-weight:600; }
+  h1{ font-size:30px; font-weight:800; margin-top:4px; letter-spacing:-.5px; }
+  .lang-wrap{ position:relative; flex-shrink:0; margin-top:6px; }
+  .lang-btn{ display:flex; align-items:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:24px; padding:11px 16px; font-size:16px; font-weight:600; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+  .lang-btn .chev{ font-size:11px; color:#666; }
+  .lang-menu{ position:absolute; right:0; top:52px; background:#fff; border-radius:16px; width:210px; box-shadow:0 12px 40px rgba(0,0,0,.16); padding:8px; z-index:40; display:none; }
+  .lang-menu.open{ display:block; }
+  .lang-item{ padding:14px 16px; border-radius:11px; font-size:19px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+  .lang-item:hover{ background:#f6f6f5; }
+  .lang-item.active{ background:#eaf1fd; color:#1a6dff; font-weight:700; }
+  .lang-item .dot{ width:9px; height:9px; border-radius:50%; background:#1a6dff; }
+
+  /* list */
+  .floor-sub{ padding:14px 22px 6px; font-size:14px; color:var(--muted); }
+  .list{ padding:8px 18px 0; }
+  .artist-row{ background:#fff; border-radius:18px; padding:16px 18px; margin-bottom:12px; display:flex; align-items:center; gap:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); cursor:pointer; transition:transform .08s; }
+  .artist-row:active{ transform:scale(.99); }
+  .row-av{ width:54px; height:54px; border-radius:50%; background:#e9e9e7; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#aaa; }
+  .row-av svg{ width:26px; height:26px; }
+  .row-main{ flex:1; min-width:0; }
+  .row-name{ font-size:18px; font-weight:700; }
+  .row-work{ font-size:14px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .row-chev{ color:#cfcfcc; font-size:22px; }
+
+  /* tabs */
+  .tabs{ display:flex; margin-top:18px; border-bottom:1px solid var(--line); }
+  .tab{ flex:1; text-align:center; padding:18px 0 16px; font-size:18px; font-weight:600; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tab.active{ color:var(--ink); border-bottom-color:var(--ink); }
+  .tab svg{ width:20px; height:20px; }
+
+  main{ padding:20px 18px 0; }
+  .profile{ background:#fff; border-radius:22px; padding:34px 24px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.04); margin-bottom:18px; }
+  .avatar{ width:118px; height:118px; border-radius:50%; background:#e6e6e4; margin:0 auto 22px; display:flex; align-items:center; justify-content:center; }
+  .avatar svg{ width:58px; height:58px; color:#a9a9a6; }
+  .artist-name{ font-size:30px; font-weight:800; letter-spacing:-.5px; }
+  .artist-role{ font-size:18px; color:var(--muted); margin-top:8px; }
+
+  .card{ background:#fff; border-radius:22px; padding:26px 24px; box-shadow:0 1px 3px rgba(0,0,0,.04); margin-bottom:18px; }
+  .card-label{ display:flex; align-items:center; gap:9px; font-size:15px; letter-spacing:2px; font-weight:700; color:#8a8a87; margin-bottom:16px; }
+  .card-label svg{ width:18px; height:18px; }
+  .card p{ font-size:18px; line-height:1.75; color:#262626; }
+  .card p.todo{ color:#b0b0ad; font-style:italic; }
+
+  .note{ background:var(--note-bg); border-left:5px solid var(--navy); border-radius:18px; padding:26px 24px; margin-bottom:18px; }
+  .note .card-label{ color:var(--navy); }
+  .note p{ font-style:italic; font-size:18px; line-height:1.8; color:#33363f; }
+  .note p + p{ margin-top:18px; }
+
+  .works-section-title{ font-size:14px; letter-spacing:1px; font-weight:700; color:#8a8a87; margin:6px 4px 14px; }
+  .works-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
+  .work{ background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+  .work-img{ aspect-ratio:1/1; background:linear-gradient(135deg,#ececea,#f4f4f2); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#b3b3b0; gap:8px; }
+  .work-img svg{ width:34px; height:34px; }
+  .work-img span{ font-size:12px; }
+  .work-info{ padding:13px 14px 16px; }
+  .work-badge{ display:inline-block; font-size:11px; font-weight:700; color:var(--navy); background:#e7ebf3; padding:3px 9px; border-radius:20px; margin-bottom:7px; }
+  .work-title{ font-size:16px; font-weight:700; line-height:1.3; }
+  .work-meta{ font-size:13px; color:var(--muted); margin-top:4px; }
+
+  .bottombar{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:linear-gradient(transparent, var(--bg) 30%); padding:16px 18px 22px; }
+  .bottom-btn{ width:100%; background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.06); color:var(--ink); }
+  .bottom-btn svg{ width:22px; height:22px; }
+</style>
+
+<script>
+const I = {
+  palette:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r="1.2" fill="currentColor" stroke="none"/><path d="M12 2C6.5 2 2 6 2 11c0 4 3 7 6 7 1.5 0 2-1 2-2 0-.7-.4-1.2-.4-1.8 0-.8.7-1.2 1.4-1.2H13c3 0 6-2 6-5.5C19 4.5 16 2 12 2z"/></svg>',
+  person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg>',
+  quote:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 7c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6L4 18c2.8-.3 5-2.7 5-5.8V10C9 8.3 7.7 7 6 7zm9 0c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6l.7 2c2.8-.3 5-2.7 5-5.8V10c0-1.7-1.3-3-3-3z"/></svg>',
+};
+
+const UI = {
+  header:{ ko:["주한 프랑스 대사관저","작품 가이드"], fr:["RÉSIDENCE DE FRANCE","Guide des Œuvres"], en:["RESIDENCE OF FRANCE","Art Guide"] },
+  floorSub:{ ko:"1층 · 작품 22점 · 작가 18인", fr:"Rez-de-chaussée · 22 œuvres · 18 artistes", en:"Ground floor · 22 works · 18 artists" },
+  tabWorks:{ ko:"작품 감상", fr:"Œuvres", en:"Artworks" },
+  tabArtist:{ ko:"작가 소개", fr:"Biographie", en:"Artist" },
+  introLabel:{ ko:"INTRODUCTION", fr:"INTRODUCTION", en:"INTRODUCTION" },
+  noteLabel:{ ko:"작가 노트", fr:"NOTE DE L'ARTISTE", en:"ARTIST'S NOTE" },
+  residenceLabel:{ ko:"관저 소장", fr:"Collection", en:"In Residence" },
+  repLabel:{ ko:"대표작", fr:"Œuvres majeures", en:"Major Works" },
+  placeholder:{ ko:"사진 추가", fr:"Ajouter photo", en:"Add photo" },
+  todoIntro:{ ko:"소개글 준비 중입니다.", fr:"Présentation à venir.", en:"Introduction coming soon." }
+};
+
+// 작가 데이터 — 이우환만 본문 채움(검증된 내용). 나머지는 작품 정보 + 소개 입력 대기.
+const ARTISTS = [
+  { id:"min", name:{ko:"민경갑",fr:"Min Kyung-gap"}, works:[{r:1,title:{ko:"산수",fr:"Paysage"},meta:"117 × 90 cm"}] },
+  { id:"lim", name:{ko:"임무상",fr:"Lim Moo-sang"}, works:[{r:1,title:{ko:"금강별곡",fr:"Geumgang Byeolgok"},meta:"155 × 238 cm"}] },
+  { id:"rhee", name:{ko:"이성자 (Seundja Rhee)",fr:"Seundja Rhee",en:"Seundja Rhee"},
+    role:{ko:"화가, 판화가",fr:"Peintre, graveuse",en:"Painter, Printmaker"},
+    intro:{
+      ko:"1918년 전남 광양 출생, 2009년 작고. 1951년 프랑스로 건너가 그랑드 쇼미에르 아카데미에서 수학한 뒤, 생을 마칠 때까지 약 60년을 프랑스에서 활동한 한국 추상미술 1세대의 유일한 여성 화가입니다. '여성과 대지', '지구 반대편으로 가는 길', '우주' 연작을 거치며 음양오행의 동양 정신을 서양 추상에 녹여냈습니다. 파리 화단은 그녀를 '동(東)의 대사(ambassadrice de l'aube)'라 불렀고, 프랑스 문화예술공로훈장(슈발리에·오피시에)을 받았습니다.",
+      fr:"Née en 1918 à Gwangyang, décédée en 2009. Partie en France en 1951, formée à l'Académie de la Grande Chaumière, elle y travailla près de 60 ans — seule femme de la première génération de l'abstraction coréenne. De « Femme et Terre » à « Vers les antipodes » puis « Univers », elle fond la pensée du yin-yang dans l'abstraction occidentale. Paris la surnomma « l'ambassadrice de l'aube ». Chevalier puis Officier des Arts et des Lettres.",
+      en:"Born 1918 in Gwangyang, died 2009. She moved to France in 1951, trained at the Académie de la Grande Chaumière, and worked there for nearly 60 years — the only woman of Korea's first generation of abstract artists. Across her 'Woman and Earth,' 'Towards the Antipodes,' and 'Universe' series she infused yin-yang thought into Western abstraction. Paris called her 'the ambassadress of dawn.' Honored with France's Order of Arts and Letters."
+    },
+    note:{
+      ko:["내가 붓질을 한 번 하면서, '이건 우리 아이들 밥 한술 떠먹이는 것'이고, 또다시 붓질 한 번 더 하면서 '이건 우리 아이들 머리를 쓰다듬어주는 것'이라고 여기며 그렸다."],
+      fr:["À chaque coup de pinceau, je me disais : « ceci, c'est donner une cuillerée de riz à mes enfants », et au coup suivant : « ceci, c'est caresser leurs cheveux ». C'est ainsi que je peignais."],
+      en:["With each brushstroke I would think, 'this is feeding my children a spoonful of rice,' and with the next, 'this is stroking my children's hair.' That is how I painted."]
+    },
+    works:[{r:1,title:{ko:"La Ville de Vierge"},meta:"195 × 130 cm"}],
+    rep:[{title:{ko:"여성과 대지"},meta:"1960s"},{title:{ko:"지구 반대편으로 가는 길"},meta:"1980–94"},{title:{ko:"우주"},meta:"1995–2008"}]
+  },
+  { id:"leeks", name:{ko:"이강소",fr:"Lee Kang-so"}, works:[{r:1,title:{ko:"미정",fr:"Sans titre"},meta:"90 × 116 cm"}] },
+  { id:"kimhk", name:{ko:"김희경",fr:"Kim Hee-kyung"}, works:[{r:1,title:{ko:"Phaino 4"},meta:"50 × 65 cm"},{r:1,title:{ko:"Phaino 5"},meta:"50 × 65 cm"}] },
+  { id:"shin", name:{ko:"신성희",fr:"Shin Sung-hy"}, works:[{r:1,title:{ko:"공간별곡",fr:"Espace Byeolgok"},meta:"99 × 100 cm"}] },
+  { id:"leeuf", name:{ko:"이우환 (Lee Ufan)",fr:"Lee Ufan",en:"Lee Ufan"},
+    role:{ko:"화가, 조각가, 철학자",fr:"Peintre, sculpteur, philosophe",en:"Painter, Sculptor, Philosopher"},
+    intro:{
+      ko:"1936년생. 한국의 모노하(Mono-ha) 운동을 이끈 거장으로, '만들지 않은 것'과 '만드는 것' 사이의 관계를 탐구합니다. 캔버스의 여백과 점 하나가 만들어내는 긴장과 울림을 통해 동양적 사유와 서양 미니멀리즘의 조화를 보여줍니다.",
+      fr:"Né en 1936. Maître du mouvement Mono-ha. Il explore la relation entre ce qui est créé et ce qui ne l'est pas. À travers le vide de la toile et la tension d'un seul point, il révèle l'harmonie entre la pensée orientale et le minimalisme occidental.",
+      en:"Born in 1936. A master who led Korea's Mono-ha movement, exploring the relationship between 'the made' and 'the unmade'. Through the void of the canvas and the tension of a single point, his work reveals a harmony between Eastern thought and Western minimalism."
+    },
+    note:{
+      ko:["가장 중요한 것은 '만남'이다. 나의 작품은 홀로 존재하는 완성된 오브제가 아니다. 그것은 놓인 장소와 시간, 그리고 바라보는 관람객과의 관계 속에서 비로소 살아난다.","점을 찍고 선을 긋는 행위는 캔버스라는 무한한 여백에 나의 신체 리듬을 새기는 일이며, 이는 곧 외부 세계와의 대화이자 우주와의 호흡이다. 나는 그림을 그리는 것이 아니라, 캔버스 위의 여백을 진동하게 하고 싶다."],
+      fr:["Le plus important est la 'rencontre'. Mon œuvre n'est pas un objet achevé existant seul. Elle ne prend vie que dans la relation avec le lieu, le temps et le spectateur.","Marquer un point ou tracer une ligne, c'est inscrire le rythme de mon corps dans le vide infini de la toile. C'est une conversation avec le monde extérieur et une respiration avec l'univers. Je ne veux pas simplement peindre ; je veux faire vibrer l'espace vide sur la toile."],
+      en:["The most important thing is the 'encounter'. My work is not a finished object existing alone. It comes alive only in relation to the place, the time, and the viewer.","To mark a point or draw a line is to inscribe the rhythm of my body onto the infinite void of the canvas — a conversation with the outer world and a breath with the universe. I do not wish merely to paint; I wish to make the empty space vibrate."]
+    },
+    works:[{r:1,title:{ko:"대응",fr:"Correspondance"},meta:"79 × 109 cm"}],
+    rep:[{title:{ko:"From Point"},meta:"1976"},{title:{ko:"From Line"},meta:"1978"},{title:{ko:"Dialogue"},meta:"2008"},{title:{ko:"Relatum"},meta:"조각 · sculpture"}]
+  },
+  { id:"kimcy", name:{ko:"김창열 (Kim Tschang-yeul)",fr:"Kim Tschang-yeul",en:"Kim Tschang-yeul"},
+    role:{ko:"화가",fr:"Peintre",en:"Painter"},
+    intro:{
+      ko:"1929년 평안남도 맹산 출생, 2021년 작고. 한국전쟁의 상흔과 앵포르멜 추상을 거쳐 1969년 프랑스에 정착했고, 1972년 파리에서 첫 물방울 작품을 선보인 이후 50여 년간 오직 물방울만을 그린 '물방울 작가'입니다. 80년대 이후에는 천자문을 배경으로 한 〈회귀〉 연작을 통해 동양의 정신성을 화면에 담았습니다. 한국인 최초로 프랑스 문화예술공로훈장 오피시에를 받았고, 제주에 김창열미술관이 있습니다.",
+      fr:"Né en 1929 à Maengsan, décédé en 2021. Après l'art informel et les blessures de la guerre de Corée, il s'installe en France en 1969. Dès sa première « goutte d'eau » présentée à Paris en 1972, il ne peindra plus que des gouttes pendant un demi-siècle. À partir des années 1980, sa série « Récurrence » associe les gouttes à des idéogrammes du Classique des mille caractères, mêlant matière occidentale et spiritualité orientale.",
+      en:"Born 1929 in Maengsan, died 2021. After Art Informel and the wounds of the Korean War, he settled in France in 1969. From his first 'water drop' shown in Paris in 1972, he would paint nothing but water drops for half a century. From the 1980s his 'Recurrence' series set the drops against Chinese classical characters, joining Western materials with Eastern spirituality."
+    },
+    note:{
+      ko:["파리 가난한 아틀리에에서의 어느 날이었습니다. 밤새도록 그린 그림이 마음에 안 들어 색채를 떼어내 재활용하려 캔버스 뒤에 물을 뿌려 놓았는데, 물이 방울져 아침 햇살에 빛나고 있었습니다. 그 순간 존재의 충일감에 온몸을 떨며 물방울을 만났습니다."],
+      fr:["C'était un jour, dans mon humble atelier parisien. Mécontent du tableau peint toute la nuit, j'avais aspergé d'eau l'arrière de la toile pour récupérer la peinture. L'eau avait perlé et brillait dans la lumière du matin. À cet instant, tremblant d'une plénitude d'être, j'ai rencontré la goutte d'eau."],
+      en:["It was one day in my poor Paris studio. Unhappy with a painting I'd worked on all night, I sprayed water behind the canvas to recover the paint. The water had beaded up and was glittering in the morning light. In that instant, trembling with a fullness of being, I met the water drop."]
+    },
+    works:[{r:1,title:{ko:"물방울",fr:"Goutte d'eau"},meta:"89 × 116 cm"}],
+    rep:[{title:{ko:"회귀 Recurrence"},meta:"1989"},{title:{ko:"Water Drops"},meta:"1974"},{title:{ko:"Bell"},meta:"2003"}]
+  },
+  { id:"moon", name:{ko:"문신 (Moon Shin)",fr:"Moon Shin",en:"Moon Shin"},
+    role:{ko:"조각가, 화가",fr:"Sculpteur, peintre",en:"Sculptor, Painter"},
+    intro:{
+      ko:"1923년 일본 규슈 출생, 1995년 작고. 마산에서 자라 화가로 출발했고, 1961년 단돈 50달러로 프랑스로 건너가 고성(古城) 수리 일을 하며 조각가로 거듭났습니다. 1970년 남프랑스 발카레스 해변에 세운 13m 높이의 〈태양의 인간〉으로 세계 무대에 이름을 알렸고, 좌우대칭의 '시메트리(Symmetry)' 양식으로 생명의 율동을 형상화했습니다. 1991년 프랑스 예술문학훈장을 받았으며, 고향 창원(마산)에 문신미술관을 직접 지었습니다.",
+      fr:"Né en 1923 au Japon (Kyushu), décédé en 1995. Grandi à Masan et d'abord peintre, il part en France en 1961 et se découvre sculpteur en restaurant un vieux château. Sa sculpture « L'Homme du soleil » de 13 m, érigée en 1970 sur la plage de Barcarès, le fait connaître sur la scène internationale. À travers son style « symétrie », il donne forme au rythme du vivant. Chevalier des Arts et des Lettres en 1991.",
+      en:"Born 1923 in Kyushu, Japan; died 1995. Raised in Masan and first a painter, he left for France in 1961 and rediscovered himself as a sculptor while restoring an old château. His 13-meter 'Man of the Sun,' erected on the Barcarès beach in 1970, brought him international recognition. Through his 'symmetry' style he gave form to the rhythm of life. Honored with France's Order of Arts and Letters in 1991."
+    },
+    note:{
+      ko:["오직 내가 바라는 것이 있다면, 이 형태들이 궁극적으로 생명의 의미성을 가지게 되기를 바랄 뿐이다. 인간은 현실을 살면서도 보이지 않는 미래, 곧 우주에 대한 꿈을 꾸고 있다."],
+      fr:["Si je souhaite une seule chose, c'est que ces formes finissent par porter le sens même de la vie. L'homme, tout en vivant le présent, rêve d'un futur invisible — l'univers."],
+      en:["If I wish for one thing, it is that these forms might ultimately carry the very meaning of life. Man, while living in the present, dreams of an invisible future — the universe."]
+    },
+    works:[{r:1,title:{ko:"에스키스",fr:"Esquisse"},meta:"55 × 35 cm · 조각 초안"},{r:1,title:{ko:"미정",fr:"Sans titre"},meta:"53 × 23 × 88 cm · 조각"}],
+    rep:[{title:{ko:"태양의 인간"},meta:"1970 · 발카레스"},{title:{ko:"Symmetry"},meta:"브론즈"}]
+  },
+  { id:"leesi", name:{ko:"이승일",fr:"Lee Seung-il"}, works:[{r:1,title:{ko:"수(水) Eau"},meta:"27.5 × 27.5 cm · 1987 · 목판화"},{r:1,title:{ko:"산(山) Montagne"},meta:"27.5 × 27.5 cm · 1987 · 목판화"}] },
+  { id:"cho", name:{ko:"조돈영",fr:"Cho Don-young"}, works:[{r:1,title:{ko:"윤회 Transmigration"},meta:"30 × 40 cm · 1986 · 종이에 아크릴"}] },
+  { id:"unknown", name:{ko:"작가 미상",fr:"Auteur inconnu"}, works:[{r:1,title:{ko:"작품명 미상",fr:"Titre non connu"},meta:"20 × 28 cm · 세라믹 릴리프"}] },
+  { id:"cesar", name:{ko:"세자르 발다치니 (César Baldaccini)",fr:"César Baldaccini",en:"César Baldaccini"},
+    role:{ko:"조각가",fr:"Sculpteur",en:"Sculptor"},
+    intro:{
+      ko:"1921년 마르세유 출생, 1998년 작고. 이탈리아 이민자 가정에서 태어나 파리 에콜 데 보자르에서 수학한 프랑스 조각가로, 이브 클랭·아르망 등과 함께 누보레알리슴(신사실주의)을 이끌었습니다. 1960년 유압 압축기로 자동차를 짓눌러 만든 '콩프레시옹(Compression)' 연작으로 큰 반향을 일으켰고, 폴리우레탄을 부풀린 '확장(Expansion)' 작업도 선보였습니다. 프랑스 영화상 '세자르 트로피'를 디자인한 작가이기도 하며, 1993년 레지옹 도뇌르 오피시에에 올랐습니다.",
+      fr:"Né en 1921 à Marseille, décédé en 1998. Sculpteur français issu d'une famille d'immigrés italiens, formé aux Beaux-Arts de Paris, il fut l'une des figures du Nouveau Réalisme aux côtés d'Yves Klein et d'Arman. En 1960, ses « Compressions » — automobiles écrasées à la presse hydraulique — font sensation ; il développera aussi les « Expansions » en polyuréthane. Créateur du trophée des César du cinéma, Officier de la Légion d'honneur (1993).",
+      en:"Born 1921 in Marseille, died 1998. A French sculptor of Italian immigrant parents, trained at the École des Beaux-Arts in Paris, he was a leading figure of Nouveau Réalisme alongside Yves Klein and Arman. His 1960 'Compressions' — automobiles crushed in a hydraulic press — caused a sensation, and he later developed polyurethane 'Expansions.' He designed the César trophy of French cinema and was made Officer of the Legion of Honour (1993)."
+    },
+    works:[{r:1,title:{ko:"압축된 프랑스기",fr:"Compression de drapeaux français"},meta:"76 × 58.3 cm · 1989"}],
+    rep:[{title:{ko:"Compression"},meta:"1960"},{title:{ko:"Le Pouce"},meta:"1965"},{title:{ko:"Expansion"},meta:"1967"}]
+  },
+  { id:"park", name:{ko:"박서보 (Park Seo-bo)",fr:"Park Seo-bo",en:"Park Seo-bo"},
+    role:{ko:"화가",fr:"Peintre",en:"Painter"},
+    intro:{
+      ko:"1931년 경북 예천 출생, 2023년 작고. 홍익대 서양화과를 졸업하고 앵포르멜 〈원형질〉, 옵아트적 〈유전질〉을 거쳐, 1967년 시작한 〈묘법(描法, Écriture)〉 연작으로 한국 단색화를 대표하는 거장이 되었습니다. 연필로 수없이 선을 긋고 한지를 적셔 밀어내는 반복적 행위 자체가 곧 수행이자 비움이라는 그의 작업은 한국 현대 추상미술을 세계에 알렸습니다.",
+      fr:"Né en 1931 à Yecheon, décédé en 2023. Diplômé de l'université Hongik, il passe de l'art informel (« Primordials ») à une abstraction proche de l'Op art (« Hereditarus »), avant de lancer en 1967 sa série « Écriture (Myobop) » qui fera de lui le maître de l'art monochrome coréen (Dansaekhwa). Tracer inlassablement des lignes au crayon, étaler la pâte de papier hanji : ce geste répété est en soi méditation et effacement de soi.",
+      en:"Born 1931 in Yecheon, died 2023. A graduate of Hongik University, he moved from Art Informel ('Primordials') through an Op-art-inflected abstraction ('Hereditarus') before launching his 'Écriture (Myobop)' series in 1967, becoming the master of Korean monochrome painting (Dansaekhwa). The endless drawing of pencil lines and pushing of soaked hanji paper is itself a discipline and an emptying of the self."
+    },
+    works:[{r:1,title:{ko:"Ecriture Series I #31"},meta:"76 × 56 cm · 1994"}],
+    rep:[{title:{ko:"묘법 No.01-77"},meta:"1977"},{title:{ko:"원형질"},meta:"1960s"},{title:{ko:"후기 묘법"},meta:"2000s"}]
+  },
+  { id:"kimkl", name:{ko:"김구림",fr:"Kim Ku-lim"}, works:[{r:1,title:{ko:"음양 95-S 26"},meta:"65 × 100 cm · 1995"}] },
+  { id:"kimsj", name:{ko:"김수자 (Kimsooja)",fr:"Kimsooja",en:"Kimsooja"},
+    role:{ko:"개념미술가",fr:"Artiste conceptuelle",en:"Conceptual Artist"},
+    intro:{
+      ko:"1957년 대구 출생. 홍익대와 파리국립미술대학에서 수학했고, 뉴욕·파리·서울을 오가며 활동하는 국제적인 개념미술 작가입니다. 어머니와의 바느질 경험에서 출발해 한국 전통 이불보를 묶은 '보따리'를 회화이자 조각이자 퍼포먼스인 매체로 끌어올렸고, 군중 속에 선 자신의 몸을 바늘에 비유한 〈바늘 여인〉으로 이주·정체성·비움을 탐구해 왔습니다. 베니스 비엔날레 한국관(2013) 등 세계 주요 무대에서 활동했으며, 2025년 프랑스 문화예술공로훈장 오피시에를 받았습니다.",
+      fr:"Née en 1957 à Daegu. Formée à l'université Hongik et aux Beaux-Arts de Paris, elle partage sa vie entre New York, Paris et Séoul. Partant de la couture apprise auprès de sa mère, elle élève le « bottari » — ballot de tissus traditionnels coréens — au rang de medium à la fois pictural, sculptural et performatif. Avec « A Needle Woman », son corps dressé dans la foule devient une aiguille. Officier des Arts et des Lettres (2025).",
+      en:"Born 1957 in Daegu. Trained at Hongik University and the École des Beaux-Arts in Paris, she lives between New York, Paris, and Seoul. Beginning from sewing learned at her mother's side, she raised the 'bottari' — a bundle of traditional Korean bedding cloths — into a medium at once painting, sculpture, and performance. In 'A Needle Woman' her still body amid crowds becomes a needle. Officier of France's Order of Arts and Letters (2025)."
+    },
+    works:[{r:1,title:{ko:"우주적 공간",fr:"Espace cosmique"},meta:"72 × 181.5 cm · 2005"}],
+    rep:[{title:{ko:"보따리 Bottari"},meta:"1990s–"},{title:{ko:"바늘 여인"},meta:"1999/2009"},{title:{ko:"호흡 To Breathe"},meta:"메츠 성당"}]
+  },
+  { id:"kimmn", name:{ko:"김명남",fr:"Kim Myung-nam"}, works:[{r:1,title:{ko:"영혼의 기억 53"},meta:"13 × 18 cm · 2008"}] },
+  { id:"parkns", name:{ko:"박능생",fr:"Park Neung-saeng"}, works:[{r:1,title:{ko:"번지점프",fr:"Saut à l'élastique"},meta:"91 × 72.5 cm · 2009"}] },
+];
+
+const LANGS = [["ko","한국어"],["fr","Français"],["en","English"],["es","Español"],["zh","中文"],["ru","Русский"],["ar","العربية"]];
+let lang="ko", view="list", curId=null, tab="artist", menuOpen=false;
+const t = (o)=> !o ? "" : (o[lang] || o.en || o.ko);
+const cur = ()=> ARTISTS.find(a=>a.id===curId);
+
+function render(){
+  const [kicker,title] = t(UI.header);
+  document.body.className = (lang==="fr"?"fr ":"") + (view==="detail"?"detail":"");
+  const app = document.getElementById("app");
+  const langMenu = LANGS.map(([c,l])=>`<div class="lang-item ${c===lang?'active':''}" onclick="setLang('${c}')"><span>${l}</span>${c===lang?'<span class="dot"></span>':''}</div>`).join("");
+
+  let body="";
+  if(view==="list"){
+    const rows = ARTISTS.map(a=>{
+      const w = a.works.map(x=>t(x.title)).join(", ");
+      return `<div class="artist-row" onclick="open_('${a.id}')">
+        <div class="row-av">${I.person}</div>
+        <div class="row-main"><div class="row-name">${t(a.name)}</div><div class="row-work">${w}</div></div>
+        <div class="row-chev">›</div></div>`;
+    }).join("");
+    body = `<div class="floor-sub">${t(UI.floorSub)}</div><div class="list">${rows}</div>`;
+  } else {
+    const a = cur();
+    const wc = (w)=>`<div class="work"><div class="work-img">${I.palette}<span>${t(UI.placeholder)}</span></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+    const artistTab = `
+      <div class="profile"><div class="avatar">${I.person}</div><div class="artist-name">${t(a.name)}</div>${a.role?`<div class="artist-role">${t(a.role)}</div>`:''}</div>
+      <div class="card"><div class="card-label">${I.info}<span>${t(UI.introLabel)}</span></div>${a.intro?`<p>${t(a.intro)}</p>`:`<p class="todo">${t(UI.todoIntro)}</p>`}</div>
+      ${a.note?`<div class="note"><div class="card-label">${I.quote}<span>${t(UI.noteLabel)}</span></div>${t(a.note).map(p=>`<p>"${p}"</p>`).join("")}</div>`:''}`;
+    const worksTab = `
+      <div class="works-section-title">${t(UI.residenceLabel).toUpperCase()}</div>
+      <div class="works-grid">${a.works.map(wc).join("")}</div>
+      ${a.rep?`<div class="works-section-title" style="margin-top:22px">${t(UI.repLabel).toUpperCase()}</div><div class="works-grid">${a.rep.map(wc).join("")}</div>`:''}`;
+    body = `
+      <div class="tabs">
+        <div class="tab ${tab==='works'?'active':''}" onclick="setTab('works')">${I.palette}${t(UI.tabWorks)}</div>
+        <div class="tab ${tab==='artist'?'active':''}" onclick="setTab('artist')">${I.person}${t(UI.tabArtist)}</div>
+      </div>
+      <main>${tab==='artist'?artistTab:worksTab}</main>
+      <div class="bottombar"><div class="bottom-btn" onclick="setTab('${tab==='artist'?'works':'artist'}')">${tab==='artist'?I.palette+t(UI.tabWorks):I.person+t(UI.tabArtist)}</div></div>`;
+  }
+
+  app.innerHTML = `
+    <div class="topbar"><div class="back ${view==='detail'?'show':''}" onclick="goList()">‹</div></div>
+    <header>
+      <div><div class="kicker">${kicker}</div><h1>${title}</h1></div>
+      <div class="lang-wrap"><div class="lang-btn" onclick="toggleMenu(event)">🌐 <span>${lang.toUpperCase()}</span> <span class="chev">▾</span></div><div class="lang-menu ${menuOpen?'open':''}">${langMenu}</div></div>
+    </header>${body}`;
+}
+function setLang(c){ lang=c; menuOpen=false; render(); }
+function open_(id){ curId=id; view="detail"; tab="artist"; render(); window.scrollTo(0,0); }
+function goList(){ view="list"; render(); window.scrollTo(0,0); }
+function setTab(x){ tab=x; render(); window.scrollTo(0,0); }
+function toggleMenu(e){ e.stopPropagation(); menuOpen=!menuOpen; render(); }
+document.addEventListener("click",()=>{ if(menuOpen){ menuOpen=false; render(); }});
+render();
+</script>
