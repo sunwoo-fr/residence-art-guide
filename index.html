@@ -88,7 +88,7 @@
   /* 사진 확대 뷰어 */
   .lightbox{ position:fixed; inset:0; background:rgba(15,15,15,.94); z-index:100; display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
   .lightbox.open{ display:flex; }
-  .lightbox img{ max-width:100%; max-height:80vh; object-fit:contain; border-radius:6px; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+  .lightbox img{ max-width:100%; max-height:92vh; object-fit:contain; border-radius:6px; box-shadow:0 8px 40px rgba(0,0,0,.5); }
   .lb-cap{ color:#f0f0f0; text-align:center; margin-top:18px; }
   .lb-cap .t{ font-size:18px; font-weight:700; }
   .lb-cap .m{ font-size:14px; color:#b9b9b9; margin-top:5px; }
@@ -334,7 +334,7 @@ function render(){
     const wc = (w,idx)=>{
       if(w.img){
         const src = IMG_BASE+w.img;
-        return `<div class="work"><div class="work-img clickable" onclick="openLB('${src}',${JSON.stringify(t(w.title))},${JSON.stringify(w.meta||'')})"><img src="${src}" alt="" onerror="imgFail(this)"></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+        return `<div class="work"><div class="work-img clickable" onclick="openLB('${src}')"><img src="${src}" alt="" onerror="imgFail(this)"></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
       }
       return `<div class="work"><div class="work-img">${I.palette}<span>${t(UI.placeholder)}</span></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
     };
