@@ -9,7 +9,7 @@
   html,body{ background:var(--bg); }
   body{
     font-family:"Apple SD Gothic Neo","Pretendard","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    color:var(--ink); max-width:480px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:24px;
+    color:var(--ink); max-width:820px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:24px;
   }
   body.detail{ padding-bottom:88px; }
   body.fr h1, body.fr .work-meta-title{ font-family:Georgia,"Times New Roman",serif; }
@@ -49,6 +49,11 @@
   .tab svg{ width:20px; height:20px; }
 
   main{ padding:20px 18px 0; }
+  @media (min-width:620px){
+    main{ max-width:680px; margin:0 auto; }
+    .list{ max-width:680px; margin:0 auto; }
+    .floor-sub{ max-width:680px; margin:0 auto; }
+  }
   .profile{ background:#fff; border-radius:22px; padding:34px 24px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.04); margin-bottom:18px; }
   .avatar{ width:118px; height:118px; border-radius:50%; background:#e6e6e4; margin:0 auto 22px; display:flex; align-items:center; justify-content:center; }
   .avatar svg{ width:58px; height:58px; color:#a9a9a6; }
@@ -68,8 +73,10 @@
 
   .works-section-title{ font-size:14px; letter-spacing:1px; font-weight:700; color:#8a8a87; margin:6px 4px 14px; }
   .works-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
+  @media (min-width:620px){ .works-grid{ grid-template-columns:1fr 1fr 1fr; } }
   .work{ background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); }
   .work-img{ aspect-ratio:1/1; background:linear-gradient(135deg,#ececea,#f4f4f2); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#b3b3b0; gap:8px; overflow:hidden; }
+  .work-img.clickable{ cursor:zoom-in; }
   .work-img svg{ width:34px; height:34px; }
   .work-img span{ font-size:12px; }
   .work-img img{ width:100%; height:100%; object-fit:cover; }
@@ -78,7 +85,17 @@
   .work-title{ font-size:16px; font-weight:700; line-height:1.3; }
   .work-meta{ font-size:13px; color:var(--muted); margin-top:4px; }
 
-  .bottombar{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:linear-gradient(transparent, var(--bg) 30%); padding:16px 18px 22px; }
+  /* 사진 확대 뷰어 */
+  .lightbox{ position:fixed; inset:0; background:rgba(15,15,15,.94); z-index:100; display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:80vh; object-fit:contain; border-radius:6px; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+  .lb-cap{ color:#f0f0f0; text-align:center; margin-top:18px; }
+  .lb-cap .t{ font-size:18px; font-weight:700; }
+  .lb-cap .m{ font-size:14px; color:#b9b9b9; margin-top:5px; }
+  .lb-close{ position:absolute; top:20px; right:24px; color:#fff; font-size:34px; line-height:1; cursor:pointer; opacity:.85; }
+  .lb-close:hover{ opacity:1; }
+
+  .bottombar{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:820px; background:linear-gradient(transparent, var(--bg) 30%); padding:16px 18px 22px; }
   .bottom-btn{ width:100%; background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.06); color:var(--ink); }
   .bottom-btn svg{ width:22px; height:22px; }
 </style>
@@ -313,10 +330,12 @@ function render(){
   } else {
     const a = cur();
     const wc = (w)=>{
+      const src = w.img ? IMG_BASE+w.img : "";
       const inner = w.img
-        ? `<img src="${IMG_BASE}${w.img}" alt="${t(w.title)}" onerror="this.parentNode.innerHTML='${I.palette.replace(/'/g,"\\'")}<span>${t(UI.placeholder)}</span>'">`
+        ? `<img src="${src}" alt="${t(w.title)}" onerror="this.parentNode.innerHTML='${I.palette.replace(/'/g,"\\'")}<span>${t(UI.placeholder)}</span>';this.parentNode.classList.remove('clickable')">`
         : `${I.palette}<span>${t(UI.placeholder)}</span>`;
-      return `<div class="work"><div class="work-img">${inner}</div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+      const clk = w.img ? ` clickable" onclick="openLB('${src}','${t(w.title).replace(/'/g,"\\'")}','${(w.meta||'').replace(/'/g,"\\'")}')` : `"`;
+      return `<div class="work"><div class="work-img${clk}>${inner}</div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
     };
     const artistTab = `
       <div class="profile"><div class="avatar">${I.person}</div><div class="artist-name">${t(a.name)}</div>${a.role?`<div class="artist-role">${t(a.role)}</div>`:''}</div>
@@ -340,8 +359,21 @@ function render(){
     <header>
       <div><div class="kicker">${kicker}</div><h1>${title}</h1></div>
       <div class="lang-wrap"><div class="lang-btn" onclick="toggleMenu(event)">🌐 <span>${lang.toUpperCase()}</span> <span class="chev">▾</span></div><div class="lang-menu ${menuOpen?'open':''}">${langMenu}</div></div>
-    </header>${body}`;
+    </header>${body}
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-close" onclick="closeLB(event,true)">×</div>
+      <img id="lb-img" src="" alt="">
+      <div class="lb-cap"><div class="t" id="lb-t"></div><div class="m" id="lb-m"></div></div>
+    </div>`;
 }
+function openLB(src,title,meta){
+  const lb=document.getElementById("lb");
+  document.getElementById("lb-img").src=src;
+  document.getElementById("lb-t").textContent=title;
+  document.getElementById("lb-m").textContent=meta;
+  lb.classList.add("open");
+}
+function closeLB(e,force){ if(force || e.target.id==="lb" || e.target.classList.contains("lb-close")){ document.getElementById("lb").classList.remove("open"); } }
 function setLang(c){ lang=c; menuOpen=false; render(); }
 function open_(id){ curId=id; view="detail"; tab="artist"; render(); window.scrollTo(0,0); }
 function goList(){ view="list"; render(); window.scrollTo(0,0); }
