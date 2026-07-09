@@ -31,19 +31,18 @@
   .lang-item.active{ background:#eaf1fd; color:#1a6dff; font-weight:700; }
   .lang-item .dot{ width:9px; height:9px; border-radius:50%; background:#1a6dff; }
 
-  /* list */
   .floor-sub{ padding:14px 22px 6px; font-size:14px; color:var(--muted); }
   .list{ padding:8px 18px 0; }
   .artist-row{ background:#fff; border-radius:18px; padding:16px 18px; margin-bottom:12px; display:flex; align-items:center; gap:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); cursor:pointer; transition:transform .08s; }
   .artist-row:active{ transform:scale(.99); }
-  .row-av{ width:54px; height:54px; border-radius:50%; background:#e9e9e7; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#aaa; }
+  .row-av{ width:54px; height:54px; border-radius:50%; background:#e9e9e7; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#aaa; overflow:hidden; }
   .row-av svg{ width:26px; height:26px; }
+  .row-av img{ width:100%; height:100%; object-fit:cover; }
   .row-main{ flex:1; min-width:0; }
   .row-name{ font-size:18px; font-weight:700; }
   .row-work{ font-size:14px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .row-chev{ color:#cfcfcc; font-size:22px; }
 
-  /* tabs */
   .tabs{ display:flex; margin-top:18px; border-bottom:1px solid var(--line); }
   .tab{ flex:1; text-align:center; padding:18px 0 16px; font-size:18px; font-weight:600; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; border-bottom:2px solid transparent; margin-bottom:-1px; }
   .tab.active{ color:var(--ink); border-bottom-color:var(--ink); }
@@ -70,9 +69,10 @@
   .works-section-title{ font-size:14px; letter-spacing:1px; font-weight:700; color:#8a8a87; margin:6px 4px 14px; }
   .works-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
   .work{ background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); }
-  .work-img{ aspect-ratio:1/1; background:linear-gradient(135deg,#ececea,#f4f4f2); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#b3b3b0; gap:8px; }
+  .work-img{ aspect-ratio:1/1; background:linear-gradient(135deg,#ececea,#f4f4f2); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#b3b3b0; gap:8px; overflow:hidden; }
   .work-img svg{ width:34px; height:34px; }
   .work-img span{ font-size:12px; }
+  .work-img img{ width:100%; height:100%; object-fit:cover; }
   .work-info{ padding:13px 14px 16px; }
   .work-badge{ display:inline-block; font-size:11px; font-weight:700; color:var(--navy); background:#e7ebf3; padding:3px 9px; border-radius:20px; margin-bottom:7px; }
   .work-title{ font-size:16px; font-weight:700; line-height:1.3; }
@@ -91,42 +91,88 @@ const I = {
   quote:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 7c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6L4 18c2.8-.3 5-2.7 5-5.8V10C9 8.3 7.7 7 6 7zm9 0c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6l.7 2c2.8-.3 5-2.7 5-5.8V10c0-1.7-1.3-3-3-3z"/></svg>',
 };
 
+const IMG_BASE = "images/";
+
 const UI = {
   header:{ ko:["주한 프랑스 대사관저","작품 가이드"], fr:["RÉSIDENCE DE FRANCE","Guide des Œuvres"], en:["RESIDENCE OF FRANCE","Art Guide"] },
-  floorSub:{ ko:"1층 · 작품 22점 · 작가 18인", fr:"Rez-de-chaussée · 22 œuvres · 18 artistes", en:"Ground floor · 22 works · 18 artists" },
+  floorSub:{ ko:"1층 · 작품 21점 · 작가 17인", fr:"Rez-de-chaussée · 21 œuvres · 17 artistes", en:"Ground floor · 21 works · 17 artists" },
   tabWorks:{ ko:"작품 감상", fr:"Œuvres", en:"Artworks" },
   tabArtist:{ ko:"작가 소개", fr:"Biographie", en:"Artist" },
   introLabel:{ ko:"INTRODUCTION", fr:"INTRODUCTION", en:"INTRODUCTION" },
   noteLabel:{ ko:"작가 노트", fr:"NOTE DE L'ARTISTE", en:"ARTIST'S NOTE" },
   residenceLabel:{ ko:"관저 소장", fr:"Collection", en:"In Residence" },
   repLabel:{ ko:"대표작", fr:"Œuvres majeures", en:"Major Works" },
-  placeholder:{ ko:"사진 추가", fr:"Ajouter photo", en:"Add photo" },
+  placeholder:{ ko:"사진 준비 중", fr:"Photo à venir", en:"Photo coming" },
   todoIntro:{ ko:"소개글 준비 중입니다.", fr:"Présentation à venir.", en:"Introduction coming soon." }
 };
 
-// 작가 데이터 — 이우환만 본문 채움(검증된 내용). 나머지는 작품 정보 + 소개 입력 대기.
 const ARTISTS = [
-  { id:"min", name:{ko:"민경갑",fr:"Min Kyung-gap"}, works:[{r:1,title:{ko:"산수",fr:"Paysage"},meta:"117 × 90 cm"}] },
-  { id:"lim", name:{ko:"임무상",fr:"Lim Moo-sang"}, works:[{r:1,title:{ko:"금강별곡",fr:"Geumgang Byeolgok"},meta:"155 × 238 cm"}] },
-  { id:"rhee", name:{ko:"이성자 (Seundja Rhee)",fr:"Seundja Rhee",en:"Seundja Rhee"},
+  { id:"min", name:{ko:"민경갑 (Min Kyung-gap)", fr:"Min Kyung-gap", en:"Min Kyung-gap"},
+    role:{ko:"한국화가",fr:"Peintre coréen",en:"Korean Painter"},
+    intro:{
+      ko:"1933년 충남 논산 출생, 2018년 작고. 호는 유산(酉山). 서울대 미술대학을 졸업하고 국전에서 여러 차례 특선하며 일찍부터 주목받은 한국화 1세대 거장입니다. '산'을 평생의 화두로 삼아, 수묵의 전통 위에 구상과 추상을 넘나드는 독자적 양식을 세웠고, 물감을 종이에 스며들게 해 재료의 물질감을 지우는 선염 기법으로 정신적 산수를 그렸습니다. 대한민국예술원 회장(2016~2017)을 지냈고 은관문화훈장을 받았습니다.",
+      fr:"Né en 1933 à Nonsan, décédé en 2018. Diplômé de l'université nationale de Séoul, maître de la première génération de la peinture coréenne (hanguk-hwa). Faisant de « la montagne » le thème de toute une vie, il a bâti un style propre entre figuration et abstraction sur la tradition du lavis. Président de l'Académie des arts de Corée (2016–2017).",
+      en:"Born 1933 in Nonsan, died 2018. A graduate of Seoul National University and a master of the first generation of Korean painting (hanguk-hwa). Making 'the mountain' his lifelong theme, he built a distinct style between figuration and abstraction upon the ink-wash tradition. President of the National Academy of Arts (2016–2017)."
+    },
+    works:[{r:1,img:"min-1.jpeg",title:{ko:"산수",fr:"Paysage"},meta:"117 × 90 cm"}],
+    rep:[{title:{ko:"산 연작"},meta:"1960s–"}]
+  },
+  { id:"lim", name:{ko:"임무상 (Lim Moo-sang)", fr:"Lim Moo-sang", en:"Lim Moo-sang"},
+    role:{ko:"한국화가",fr:"Peintre coréen",en:"Korean Painter"},
+    intro:{
+      ko:"경북 문경 출신. 벼루 돌가루로 직접 만든 광물성 석채(石彩)를 주재료로 쓰는 한국화가로, 고향의 초가집·금강산·백두산·소나무·달 등 지극히 한국적인 소재를 특유의 빛깔과 질감으로 그립니다. 1991년 첫 개인전 이후 2012년 파리 그랑 팔레를 비롯해 프랑스·이탈리아·스위스 등 유럽에서 초대전을 이어갔고, 이탈리아 예술계로부터 '마에스트로(거장)' 칭호를 받았습니다. 1957년부터 60년 넘게 '그림일기'를 써온 것으로도 알려져 있습니다.",
+      fr:"Originaire de Mungyeong. Peintre coréen utilisant des pigments minéraux (seokchae) qu'il prépare lui-même à partir de poudre de pierre. Il peint des motifs profondément coréens — chaumières, monts Geumgang et Baekdu, pins, lune — dans une matière et des couleurs singulières. Exposé au Grand Palais à Paris (2012) et à travers l'Europe, salué « Maestro » par le milieu artistique italien.",
+      en:"From Mungyeong. A Korean painter who works with mineral pigments (seokchae) he prepares himself from stone powder, painting deeply Korean motifs — thatched houses, Mounts Geumgang and Baekdu, pines, the moon — in singular color and texture. Exhibited at the Grand Palais in Paris (2012) and across Europe, hailed as 'Maestro' by the Italian art world."
+    },
+    works:[{r:1,img:"lim-1.jpeg",title:{ko:"금강별곡",fr:"Geumgang Byeolgok"},meta:"155 × 238 cm"}],
+    rep:[{title:{ko:"금강산·소나무 연작"},meta:"석채"}]
+  },
+  { id:"rhee", name:{ko:"이성자 (Seundja Rhee)", fr:"Seundja Rhee", en:"Seundja Rhee"},
     role:{ko:"화가, 판화가",fr:"Peintre, graveuse",en:"Painter, Printmaker"},
     intro:{
-      ko:"1918년 전남 광양 출생, 2009년 작고. 1951년 프랑스로 건너가 그랑드 쇼미에르 아카데미에서 수학한 뒤, 생을 마칠 때까지 약 60년을 프랑스에서 활동한 한국 추상미술 1세대의 유일한 여성 화가입니다. '여성과 대지', '지구 반대편으로 가는 길', '우주' 연작을 거치며 음양오행의 동양 정신을 서양 추상에 녹여냈습니다. 파리 화단은 그녀를 '동(東)의 대사(ambassadrice de l'aube)'라 불렀고, 프랑스 문화예술공로훈장(슈발리에·오피시에)을 받았습니다.",
-      fr:"Née en 1918 à Gwangyang, décédée en 2009. Partie en France en 1951, formée à l'Académie de la Grande Chaumière, elle y travailla près de 60 ans — seule femme de la première génération de l'abstraction coréenne. De « Femme et Terre » à « Vers les antipodes » puis « Univers », elle fond la pensée du yin-yang dans l'abstraction occidentale. Paris la surnomma « l'ambassadrice de l'aube ». Chevalier puis Officier des Arts et des Lettres.",
-      en:"Born 1918 in Gwangyang, died 2009. She moved to France in 1951, trained at the Académie de la Grande Chaumière, and worked there for nearly 60 years — the only woman of Korea's first generation of abstract artists. Across her 'Woman and Earth,' 'Towards the Antipodes,' and 'Universe' series she infused yin-yang thought into Western abstraction. Paris called her 'the ambassadress of dawn.' Honored with France's Order of Arts and Letters."
+      ko:"1918년 전남 광양 출생, 2009년 작고. 1951년 프랑스로 건너가 그랑드 쇼미에르 아카데미에서 수학한 뒤, 생을 마칠 때까지 약 60년을 프랑스에서 활동한 한국 추상미술 1세대의 유일한 여성 화가입니다. '여성과 대지', '지구 반대편으로 가는 길', '우주' 연작을 거치며 음양오행의 동양 정신을 서양 추상에 녹여냈습니다. 파리 화단은 그녀를 '동(東)의 대사(ambassadrice de l'aube)'라 불렀고, 프랑스 문화예술공로훈장 슈발리에(1991)와 오피시에(2002)를 받았습니다.",
+      fr:"Née en 1918 à Gwangyang, décédée en 2009. Partie en France en 1951, formée à l'Académie de la Grande Chaumière, elle y travailla près de 60 ans — seule femme de la première génération de l'abstraction coréenne. De « Femme et Terre » à « Vers les antipodes » puis « Univers », elle fond la pensée du yin-yang dans l'abstraction occidentale. Paris la surnomma « l'ambassadrice de l'aube ». Chevalier (1991) puis Officier (2002) des Arts et des Lettres.",
+      en:"Born 1918 in Gwangyang, died 2009. She moved to France in 1951, trained at the Académie de la Grande Chaumière, and worked there for nearly 60 years — the only woman of Korea's first generation of abstract artists. Across her 'Woman and Earth,' 'Towards the Antipodes,' and 'Universe' series she infused yin-yang thought into Western abstraction. Paris called her 'the ambassadress of dawn.' Chevalier (1991) then Officier (2002) of the Order of Arts and Letters."
     },
     note:{
       ko:["내가 붓질을 한 번 하면서, '이건 우리 아이들 밥 한술 떠먹이는 것'이고, 또다시 붓질 한 번 더 하면서 '이건 우리 아이들 머리를 쓰다듬어주는 것'이라고 여기며 그렸다."],
       fr:["À chaque coup de pinceau, je me disais : « ceci, c'est donner une cuillerée de riz à mes enfants », et au coup suivant : « ceci, c'est caresser leurs cheveux ». C'est ainsi que je peignais."],
       en:["With each brushstroke I would think, 'this is feeding my children a spoonful of rice,' and with the next, 'this is stroking my children's hair.' That is how I painted."]
     },
-    works:[{r:1,title:{ko:"La Ville de Vierge"},meta:"195 × 130 cm"}],
+    works:[{r:1,img:"rhee-1.jpeg",title:{ko:"La Ville de Vierge"},meta:"195 × 130 cm"}],
     rep:[{title:{ko:"여성과 대지"},meta:"1960s"},{title:{ko:"지구 반대편으로 가는 길"},meta:"1980–94"},{title:{ko:"우주"},meta:"1995–2008"}]
   },
-  { id:"leeks", name:{ko:"이강소",fr:"Lee Kang-so"}, works:[{r:1,title:{ko:"미정",fr:"Sans titre"},meta:"90 × 116 cm"}] },
-  { id:"kimhk", name:{ko:"김희경",fr:"Kim Hee-kyung"}, works:[{r:1,title:{ko:"Phaino 4"},meta:"50 × 65 cm"},{r:1,title:{ko:"Phaino 5"},meta:"50 × 65 cm"}] },
-  { id:"shin", name:{ko:"신성희",fr:"Shin Sung-hy"}, works:[{r:1,title:{ko:"공간별곡",fr:"Espace Byeolgok"},meta:"99 × 100 cm"}] },
-  { id:"leeuf", name:{ko:"이우환 (Lee Ufan)",fr:"Lee Ufan",en:"Lee Ufan"},
+  { id:"leeks", name:{ko:"이강소 (Lee Kang-so)", fr:"Lee Kang-so", en:"Lee Kang-so"},
+    role:{ko:"화가, 실험미술가",fr:"Peintre, artiste expérimental",en:"Painter, Experimental Artist"},
+    intro:{
+      ko:"1943년 대구 출생. 서울대 회화과를 졸업하고 1970년대 한국 실험미술을 이끈 거장입니다. 설치·퍼포먼스·사진·비디오·회화·조각을 자유로이 넘나들었고, 1975년 파리 국립현대미술관에서 선보인 퍼포먼스로 국제적 명성을 얻었습니다. 1980년대 중반 이후의 회화에는 오리·배·사슴 같은 형상이 몇 개의 빠른 필획으로 나타나는데, 이는 동양적 '기(氣)'와 생성·소멸의 세계관을 담은 기호입니다.",
+      fr:"Né en 1943 à Daegu. Diplômé de l'université nationale de Séoul, il fut une figure majeure de l'art expérimental coréen des années 1970, naviguant entre installation, performance, photographie, vidéo, peinture et sculpture. Sa performance au Musée d'art moderne de Paris (1975) lui valut une reconnaissance internationale. Dès le milieu des années 1980, canards, barques et cerfs surgissent en quelques traits rapides — signes du « qi » et d'un monde de création et de disparition.",
+      en:"Born 1943 in Daegu. A graduate of Seoul National University, he was a leading figure of 1970s Korean experimental art, moving freely across installation, performance, photography, video, painting, and sculpture. His 1975 performance at the Musée d'Art Moderne in Paris brought international recognition. From the mid-1980s, ducks, boats, and deer appear in a few swift strokes — signs of 'qi' and a worldview of becoming and vanishing."
+    },
+    works:[{r:1,img:"leeks-1.jpeg",title:{ko:"미정",fr:"Sans titre"},meta:"90 × 116 cm"}],
+    rep:[{title:{ko:"소멸(선술집)"},meta:"1973"},{title:{ko:"청명 연작"},meta:"2000s–"}]
+  },
+  { id:"kimhk", name:{ko:"김희경 (KIM Huikyoung)", fr:"KIM Huikyoung", en:"KIM Huikyoung"},
+    role:{ko:"판화가",fr:"Graveuse",en:"Printmaker"},
+    intro:{
+      ko:"1948년 서울 출생. 서울대 미술대학을 졸업하고 1972년 명동화랑에서 개인전을 연 뒤 파리로 이주해 파리국립미술학교를 졸업했습니다. 판화를 주요 매체로 삼아 파리를 중심으로 활동하며, 1990년대부터 프랑스의 대표적 판화전 《SAGA》에 꾸준히 참여했습니다. 스크린 판화에 한지 종이오브제를 콜라주하고, 동양화의 여백과 절제된 모노톤, 서체적인 선을 결합해 명상적이고 동양적인 화면을 만들어냅니다.",
+      fr:"Née en 1948 à Séoul. Diplômée de l'université nationale de Séoul, elle expose à Séoul en 1972 puis s'installe à Paris et sort de l'École nationale des Beaux-Arts. Faisant de la gravure son medium principal, elle travaille à Paris et participe régulièrement au salon SAGA dès les années 1990. Elle marie sérigraphie et collages de papier hanji, vides à la manière de la peinture orientale, monochromie sobre et traits calligraphiques, pour une image méditative.",
+      en:"Born 1948 in Seoul. A graduate of Seoul National University, she exhibited in Seoul in 1972, then moved to Paris and graduated from the École nationale des Beaux-Arts. Making printmaking her main medium, she works in Paris and has regularly taken part in France's SAGA print salon since the 1990s. She combines screenprint with collaged hanji paper objects, the voids of Eastern painting, restrained monochrome, and calligraphic lines to create a meditative image."
+    },
+    works:[{r:1,img:"kimhk-1.jpeg",title:{ko:"Phaino 4"},meta:"50 × 65 cm"},{r:1,img:"kimhk-2.jpeg",title:{ko:"Phaino 5"},meta:"50 × 65 cm"}],
+    rep:[{title:{ko:"겨울 Ⅰ"},meta:"1994 · 스크린 판화·콜라주"}]
+  },
+  { id:"shin", name:{ko:"신성희 (Shin Sung-hy)", fr:"Shin Sung-hy", en:"Shin Sung-hy"},
+    role:{ko:"화가",fr:"Peintre",en:"Painter"},
+    intro:{
+      ko:"1948년 안산 출생, 2009년 작고. 홍익대 회화과를 졸업하고 1980년 김창열의 권유로 파리로 건너가 생의 마지막까지 그곳에서 활동했습니다. 캔버스의 평면성을 벗어나려는 탐구 끝에, 칠한 캔버스를 자르고 박음질하고 색띠로 엮어 회화를 입체와 공간으로 확장한 '누아주(Nouage·엮음)' 기법을 창시했습니다. 관저에 있는 〈공간별곡〉이 바로 그 누아주 연작에 속합니다. 한국 회화사에서 가장 독창적인 화가 중 한 사람으로 평가됩니다.",
+      fr:"Né en 1948 à Ansan, décédé en 2009. Diplômé de l'université Hongik, il part à Paris en 1980 sur le conseil de Kim Tschang-yeul et y travaille jusqu'à la fin de sa vie. Cherchant à dépasser la planéité de la toile, il invente le « Nouage » : découper, coudre et tresser des bandes de toile peinte pour étendre la peinture vers le volume et l'espace. L'œuvre « Espace Byeolgok » présentée ici appartient à cette série.",
+      en:"Born 1948 in Ansan, died 2009. A graduate of Hongik University, he moved to Paris in 1980 on Kim Tschang-yeul's advice and worked there until the end of his life. Seeking to escape the flatness of the canvas, he created 'Nouage' — cutting, stitching, and weaving strips of painted canvas to extend painting into volume and space. The work shown here belongs to that series."
+    },
+    works:[{r:1,img:"shin-1.jpeg",title:{ko:"공간별곡",fr:"Espace Byeolgok"},meta:"99 × 100 cm"}],
+    rep:[{title:{ko:"누아주 Nouage"},meta:"1997–2009"},{title:{ko:"평면의 진동"},meta:"1996"}]
+  },
+  { id:"leeuf", name:{ko:"이우환 (Lee Ufan)", fr:"Lee Ufan", en:"Lee Ufan"},
     role:{ko:"화가, 조각가, 철학자",fr:"Peintre, sculpteur, philosophe",en:"Painter, Sculptor, Philosopher"},
     intro:{
       ko:"1936년생. 한국의 모노하(Mono-ha) 운동을 이끈 거장으로, '만들지 않은 것'과 '만드는 것' 사이의 관계를 탐구합니다. 캔버스의 여백과 점 하나가 만들어내는 긴장과 울림을 통해 동양적 사유와 서양 미니멀리즘의 조화를 보여줍니다.",
@@ -138,25 +184,25 @@ const ARTISTS = [
       fr:["Le plus important est la 'rencontre'. Mon œuvre n'est pas un objet achevé existant seul. Elle ne prend vie que dans la relation avec le lieu, le temps et le spectateur.","Marquer un point ou tracer une ligne, c'est inscrire le rythme de mon corps dans le vide infini de la toile. C'est une conversation avec le monde extérieur et une respiration avec l'univers. Je ne veux pas simplement peindre ; je veux faire vibrer l'espace vide sur la toile."],
       en:["The most important thing is the 'encounter'. My work is not a finished object existing alone. It comes alive only in relation to the place, the time, and the viewer.","To mark a point or draw a line is to inscribe the rhythm of my body onto the infinite void of the canvas — a conversation with the outer world and a breath with the universe. I do not wish merely to paint; I wish to make the empty space vibrate."]
     },
-    works:[{r:1,title:{ko:"대응",fr:"Correspondance"},meta:"79 × 109 cm"}],
+    works:[{r:1,img:"leeuf-1.jpeg",title:{ko:"대응",fr:"Correspondance"},meta:"79 × 109 cm"}],
     rep:[{title:{ko:"From Point"},meta:"1976"},{title:{ko:"From Line"},meta:"1978"},{title:{ko:"Dialogue"},meta:"2008"},{title:{ko:"Relatum"},meta:"조각 · sculpture"}]
   },
-  { id:"kimcy", name:{ko:"김창열 (Kim Tschang-yeul)",fr:"Kim Tschang-yeul",en:"Kim Tschang-yeul"},
+  { id:"kimcy", name:{ko:"김창열 (Kim Tschang-yeul)", fr:"Kim Tschang-yeul", en:"Kim Tschang-yeul"},
     role:{ko:"화가",fr:"Peintre",en:"Painter"},
     intro:{
-      ko:"1929년 평안남도 맹산 출생, 2021년 작고. 한국전쟁의 상흔과 앵포르멜 추상을 거쳐 1969년 프랑스에 정착했고, 1972년 파리에서 첫 물방울 작품을 선보인 이후 50여 년간 오직 물방울만을 그린 '물방울 작가'입니다. 80년대 이후에는 천자문을 배경으로 한 〈회귀〉 연작을 통해 동양의 정신성을 화면에 담았습니다. 한국인 최초로 프랑스 문화예술공로훈장 오피시에를 받았고, 제주에 김창열미술관이 있습니다.",
-      fr:"Né en 1929 à Maengsan, décédé en 2021. Après l'art informel et les blessures de la guerre de Corée, il s'installe en France en 1969. Dès sa première « goutte d'eau » présentée à Paris en 1972, il ne peindra plus que des gouttes pendant un demi-siècle. À partir des années 1980, sa série « Récurrence » associe les gouttes à des idéogrammes du Classique des mille caractères, mêlant matière occidentale et spiritualité orientale.",
-      en:"Born 1929 in Maengsan, died 2021. After Art Informel and the wounds of the Korean War, he settled in France in 1969. From his first 'water drop' shown in Paris in 1972, he would paint nothing but water drops for half a century. From the 1980s his 'Recurrence' series set the drops against Chinese classical characters, joining Western materials with Eastern spirituality."
+      ko:"1929년 평안남도 맹산 출생, 2021년 작고. 한국전쟁의 상흔과 앵포르멜 추상을 거쳐 1969년 프랑스에 정착했고, 1972년 파리에서 첫 물방울 작품을 선보인 이후 50여 년간 오직 물방울만을 그린 '물방울 작가'입니다. 80년대 이후에는 천자문을 배경으로 한 〈회귀〉 연작을 통해 동양의 정신성을 화면에 담았습니다. 프랑스 문화예술공로훈장을 받았으며, 제주에 김창열미술관이 있습니다.",
+      fr:"Né en 1929 à Maengsan, décédé en 2021. Après l'art informel et les blessures de la guerre de Corée, il s'installe en France en 1969. Dès sa première « goutte d'eau » présentée à Paris en 1972, il ne peindra plus que des gouttes pendant un demi-siècle. À partir des années 1980, sa série « Récurrence » associe les gouttes à des idéogrammes du Classique des mille caractères, mêlant matière occidentale et spiritualité orientale. Décoré de l'ordre des Arts et des Lettres.",
+      en:"Born 1929 in Maengsan, died 2021. After Art Informel and the wounds of the Korean War, he settled in France in 1969. From his first 'water drop' shown in Paris in 1972, he would paint nothing but water drops for half a century. From the 1980s his 'Recurrence' series set the drops against Chinese classical characters, joining Western materials with Eastern spirituality. Honored with France's Order of Arts and Letters."
     },
     note:{
       ko:["파리 가난한 아틀리에에서의 어느 날이었습니다. 밤새도록 그린 그림이 마음에 안 들어 색채를 떼어내 재활용하려 캔버스 뒤에 물을 뿌려 놓았는데, 물이 방울져 아침 햇살에 빛나고 있었습니다. 그 순간 존재의 충일감에 온몸을 떨며 물방울을 만났습니다."],
       fr:["C'était un jour, dans mon humble atelier parisien. Mécontent du tableau peint toute la nuit, j'avais aspergé d'eau l'arrière de la toile pour récupérer la peinture. L'eau avait perlé et brillait dans la lumière du matin. À cet instant, tremblant d'une plénitude d'être, j'ai rencontré la goutte d'eau."],
       en:["It was one day in my poor Paris studio. Unhappy with a painting I'd worked on all night, I sprayed water behind the canvas to recover the paint. The water had beaded up and was glittering in the morning light. In that instant, trembling with a fullness of being, I met the water drop."]
     },
-    works:[{r:1,title:{ko:"물방울",fr:"Goutte d'eau"},meta:"89 × 116 cm"}],
+    works:[{r:1,img:"kimcy-1.jpeg",title:{ko:"물방울",fr:"Goutte d'eau"},meta:"89 × 116 cm"}],
     rep:[{title:{ko:"회귀 Recurrence"},meta:"1989"},{title:{ko:"Water Drops"},meta:"1974"},{title:{ko:"Bell"},meta:"2003"}]
   },
-  { id:"moon", name:{ko:"문신 (Moon Shin)",fr:"Moon Shin",en:"Moon Shin"},
+  { id:"moon", name:{ko:"문신 (Moon Shin)", fr:"Moon Shin", en:"Moon Shin"},
     role:{ko:"조각가, 화가",fr:"Sculpteur, peintre",en:"Sculptor, Painter"},
     intro:{
       ko:"1923년 일본 규슈 출생, 1995년 작고. 마산에서 자라 화가로 출발했고, 1961년 단돈 50달러로 프랑스로 건너가 고성(古城) 수리 일을 하며 조각가로 거듭났습니다. 1970년 남프랑스 발카레스 해변에 세운 13m 높이의 〈태양의 인간〉으로 세계 무대에 이름을 알렸고, 좌우대칭의 '시메트리(Symmetry)' 양식으로 생명의 율동을 형상화했습니다. 1991년 프랑스 예술문학훈장을 받았으며, 고향 창원(마산)에 문신미술관을 직접 지었습니다.",
@@ -168,51 +214,83 @@ const ARTISTS = [
       fr:["Si je souhaite une seule chose, c'est que ces formes finissent par porter le sens même de la vie. L'homme, tout en vivant le présent, rêve d'un futur invisible — l'univers."],
       en:["If I wish for one thing, it is that these forms might ultimately carry the very meaning of life. Man, while living in the present, dreams of an invisible future — the universe."]
     },
-    works:[{r:1,title:{ko:"에스키스",fr:"Esquisse"},meta:"55 × 35 cm · 조각 초안"},{r:1,title:{ko:"미정",fr:"Sans titre"},meta:"53 × 23 × 88 cm · 조각"}],
+    works:[{r:1,img:"moon-1.jpeg",title:{ko:"에스키스",fr:"Esquisse"},meta:"55 × 35 cm · 조각 초안"},{r:1,img:"moon-2.jpeg",title:{ko:"미정",fr:"Sans titre"},meta:"53 × 23 × 88 cm · 조각"}],
     rep:[{title:{ko:"태양의 인간"},meta:"1970 · 발카레스"},{title:{ko:"Symmetry"},meta:"브론즈"}]
   },
-  { id:"leesi", name:{ko:"이승일",fr:"Lee Seung-il"}, works:[{r:1,title:{ko:"수(水) Eau"},meta:"27.5 × 27.5 cm · 1987 · 목판화"},{r:1,title:{ko:"산(山) Montagne"},meta:"27.5 × 27.5 cm · 1987 · 목판화"}] },
-  { id:"cho", name:{ko:"조돈영",fr:"Cho Don-young"}, works:[{r:1,title:{ko:"윤회 Transmigration"},meta:"30 × 40 cm · 1986 · 종이에 아크릴"}] },
-  { id:"unknown", name:{ko:"작가 미상",fr:"Auteur inconnu"}, works:[{r:1,title:{ko:"작품명 미상",fr:"Titre non connu"},meta:"20 × 28 cm · 세라믹 릴리프"}] },
-  { id:"cesar", name:{ko:"세자르 발다치니 (César Baldaccini)",fr:"César Baldaccini",en:"César Baldaccini"},
+  { id:"leesi", name:{ko:"이승일 (Lee Seung-il)", fr:"Lee Seung-il", en:"Lee Seung-il"}, works:[{r:1,img:"leesi-1.jpeg",title:{ko:"수(水) Eau"},meta:"27.5 × 27.5 cm · 1987 · 목판화"},{r:1,img:"leesi-2.jpeg",title:{ko:"산(山) Montagne"},meta:"27.5 × 27.5 cm · 1987 · 목판화"}] },
+  { id:"cho", name:{ko:"조돈영 (Cho Don-young)", fr:"Cho Don-young", en:"Cho Don-young"},
+    role:{ko:"화가",fr:"Peintre",en:"Painter"},
+    intro:{
+      ko:"1939년 출생, 2023년 작고. 서울예술고등학교와 홍익대 회화과를 나와 1979년 '체질을 바꾸고 싶어서' 파리로 건너가 그곳에서 생을 마쳤습니다. 법정·호진 스님과의 대화를 계기로, 자신을 태우며 짧은 순간 세상을 밝히고 사라지는 '성냥개비'를 평생의 소재로 삼았습니다. 다 타버린 성냥개비를 의인화해 삶과 죽음, 세속적 욕망이 소진된 열반의 세계를 탐구했고, 작품명 〈윤회 Transmigration〉가 그 세계관을 압축합니다.",
+      fr:"Né en 1939, décédé en 2023. Formé à l'université Hongik, il part à Paris en 1979 « pour changer de nature » et y finit sa vie. Inspiré par ses échanges avec des moines bouddhistes, il fit de l'allumette — qui se consume pour éclairer un instant le monde avant de disparaître — le motif de toute une vie, explorant la vie, la mort et le nirvana. Le titre « Transmigration » résume cette vision.",
+      en:"Born 1939, died 2023. Trained at Hongik University, he moved to Paris in 1979 'to change his nature' and lived there to the end. Inspired by conversations with Buddhist monks, he made the matchstick — which burns to light the world for an instant before vanishing — his lifelong motif, exploring life, death, and nirvana. The title 'Transmigration' distills this vision."
+    },
+    note:{
+      ko:["성냥개비는 단 한 번 불을 일으켰을 때 그 생명이 확인되는 것이고, 그 순간 생명은 끝나는 것입니다. 이 얼마나 극적인 삶입니까? 불꽃에서 생명과 희생의 아름다움을 동시에 보게 됩니다."],
+      fr:["L'allumette ne confirme sa vie qu'au moment où elle prend feu — et à cet instant même, sa vie s'achève. Quelle existence dramatique ! Dans la flamme, je vois à la fois la beauté de la vie et celle du sacrifice."],
+      en:["A matchstick's life is confirmed only the moment it sparks into flame — and in that very instant, its life ends. What a dramatic existence! In the flame I see at once the beauty of life and of sacrifice."]
+    },
+    works:[{r:1,img:"cho-1.jpeg",title:{ko:"윤회 Transmigration"},meta:"30 × 40 cm · 1986 · 종이에 아크릴"}],
+    rep:[{title:{ko:"삼사라 Transmigration"},meta:"1978"},{title:{ko:"횡단 Traversée"},meta:"1988"}]
+  },
+  { id:"unknown", name:{ko:"작가 미상", fr:"Auteur inconnu", en:"Unknown Artist"}, works:[{r:1,img:"inconnu.jpeg",title:{ko:"작품명 미상",fr:"Titre non connu"},meta:"20 × 28 cm · 세라믹 릴리프"}] },
+  { id:"cesar", name:{ko:"세자르 발다치니 (César Baldaccini)", fr:"César Baldaccini", en:"César Baldaccini"},
     role:{ko:"조각가",fr:"Sculpteur",en:"Sculptor"},
     intro:{
       ko:"1921년 마르세유 출생, 1998년 작고. 이탈리아 이민자 가정에서 태어나 파리 에콜 데 보자르에서 수학한 프랑스 조각가로, 이브 클랭·아르망 등과 함께 누보레알리슴(신사실주의)을 이끌었습니다. 1960년 유압 압축기로 자동차를 짓눌러 만든 '콩프레시옹(Compression)' 연작으로 큰 반향을 일으켰고, 폴리우레탄을 부풀린 '확장(Expansion)' 작업도 선보였습니다. 프랑스 영화상 '세자르 트로피'를 디자인한 작가이기도 하며, 1993년 레지옹 도뇌르 오피시에에 올랐습니다.",
       fr:"Né en 1921 à Marseille, décédé en 1998. Sculpteur français issu d'une famille d'immigrés italiens, formé aux Beaux-Arts de Paris, il fut l'une des figures du Nouveau Réalisme aux côtés d'Yves Klein et d'Arman. En 1960, ses « Compressions » — automobiles écrasées à la presse hydraulique — font sensation ; il développera aussi les « Expansions » en polyuréthane. Créateur du trophée des César du cinéma, Officier de la Légion d'honneur (1993).",
       en:"Born 1921 in Marseille, died 1998. A French sculptor of Italian immigrant parents, trained at the École des Beaux-Arts in Paris, he was a leading figure of Nouveau Réalisme alongside Yves Klein and Arman. His 1960 'Compressions' — automobiles crushed in a hydraulic press — caused a sensation, and he later developed polyurethane 'Expansions.' He designed the César trophy of French cinema and was made Officer of the Legion of Honour (1993)."
     },
-    works:[{r:1,title:{ko:"압축된 프랑스기",fr:"Compression de drapeaux français"},meta:"76 × 58.3 cm · 1989"}],
+    works:[{r:1,img:"cesar-1.jpeg",title:{ko:"압축된 프랑스기",fr:"Compression de drapeaux français"},meta:"76 × 58.3 cm · 1989"}],
     rep:[{title:{ko:"Compression"},meta:"1960"},{title:{ko:"Le Pouce"},meta:"1965"},{title:{ko:"Expansion"},meta:"1967"}]
   },
-  { id:"park", name:{ko:"박서보 (Park Seo-bo)",fr:"Park Seo-bo",en:"Park Seo-bo"},
+  { id:"park", name:{ko:"박서보 (Park Seo-bo)", fr:"Park Seo-bo", en:"Park Seo-bo"},
     role:{ko:"화가",fr:"Peintre",en:"Painter"},
     intro:{
       ko:"1931년 경북 예천 출생, 2023년 작고. 홍익대 서양화과를 졸업하고 앵포르멜 〈원형질〉, 옵아트적 〈유전질〉을 거쳐, 1967년 시작한 〈묘법(描法, Écriture)〉 연작으로 한국 단색화를 대표하는 거장이 되었습니다. 연필로 수없이 선을 긋고 한지를 적셔 밀어내는 반복적 행위 자체가 곧 수행이자 비움이라는 그의 작업은 한국 현대 추상미술을 세계에 알렸습니다.",
       fr:"Né en 1931 à Yecheon, décédé en 2023. Diplômé de l'université Hongik, il passe de l'art informel (« Primordials ») à une abstraction proche de l'Op art (« Hereditarus »), avant de lancer en 1967 sa série « Écriture (Myobop) » qui fera de lui le maître de l'art monochrome coréen (Dansaekhwa). Tracer inlassablement des lignes au crayon, étaler la pâte de papier hanji : ce geste répété est en soi méditation et effacement de soi.",
       en:"Born 1931 in Yecheon, died 2023. A graduate of Hongik University, he moved from Art Informel ('Primordials') through an Op-art-inflected abstraction ('Hereditarus') before launching his 'Écriture (Myobop)' series in 1967, becoming the master of Korean monochrome painting (Dansaekhwa). The endless drawing of pencil lines and pushing of soaked hanji paper is itself a discipline and an emptying of the self."
     },
-    works:[{r:1,title:{ko:"Ecriture Series I #31"},meta:"76 × 56 cm · 1994"}],
+    works:[{r:1,img:"park-1.jpeg",title:{ko:"Ecriture Series I #31"},meta:"76 × 56 cm · 1994"}],
     rep:[{title:{ko:"묘법 No.01-77"},meta:"1977"},{title:{ko:"원형질"},meta:"1960s"},{title:{ko:"후기 묘법"},meta:"2000s"}]
   },
-  { id:"kimkl", name:{ko:"김구림",fr:"Kim Ku-lim"}, works:[{r:1,title:{ko:"음양 95-S 26"},meta:"65 × 100 cm · 1995"}] },
-  { id:"kimsj", name:{ko:"김수자 (Kimsooja)",fr:"Kimsooja",en:"Kimsooja"},
+  { id:"kimkl", name:{ko:"김구림 (Kim Ku-lim)", fr:"Kim Ku-lim", en:"Kim Ku-lim"},
+    role:{ko:"전위예술가",fr:"Artiste d'avant-garde",en:"Avant-garde Artist"},
+    intro:{
+      ko:"1936년 경북 상주 출생. 한국 전위예술의 선구자로, 최초의 실험영화 〈1/24초의 의미〉(1969), 최초의 대지미술 〈현상에서 흔적으로〉(1970) 등 회화·영화·퍼포먼스·대지미술을 넘나들며 '최초'를 거듭 갱신해 왔습니다. 1980년대 중반부터는 빛과 어둠, 하늘과 땅 같은 상대성이 하나로 존재함을 이야기하는 〈음양〉 연작을 이어오고 있으며, 2012년 영국 테이트모던이 꼽은 세계 현대미술 대표 작가 20인에 이름을 올렸습니다.",
+      fr:"Né en 1936 à Sangju. Pionnier de l'avant-garde coréenne, auteur du premier film expérimental coréen « Le Sens d'1/24 de seconde » (1969) et du premier land art coréen (1970), il n'a cessé de repousser les frontières entre peinture, film, performance et land art. Depuis le milieu des années 1980, sa série « Yin et Yang » explore la coexistence des contraires. En 2012, la Tate Modern l'a compté parmi 20 artistes majeurs de l'art contemporain mondial.",
+      en:"Born 1936 in Sangju. A pioneer of Korean avant-garde art, creator of Korea's first experimental film 'The Meaning of 1/24 Second' (1969) and first land art (1970), repeatedly pushing the boundaries of painting, film, performance, and land art. Since the mid-1980s his 'Yin and Yang' series explores the coexistence of opposites. In 2012 Tate Modern named him among 20 leading artists of contemporary world art."
+    },
+    works:[{r:1,img:"kimkl-1.jpeg",title:{ko:"음양 95-S 26"},meta:"65 × 100 cm · 1995"}],
+    rep:[{title:{ko:"1/24초의 의미"},meta:"1969"},{title:{ko:"현상에서 흔적으로"},meta:"1970"}]
+  },
+  { id:"kimsj", name:{ko:"김수자 (Kimsooja)", fr:"Kimsooja", en:"Kimsooja"},
     role:{ko:"개념미술가",fr:"Artiste conceptuelle",en:"Conceptual Artist"},
     intro:{
-      ko:"1957년 대구 출생. 홍익대와 파리국립미술대학에서 수학했고, 뉴욕·파리·서울을 오가며 활동하는 국제적인 개념미술 작가입니다. 어머니와의 바느질 경험에서 출발해 한국 전통 이불보를 묶은 '보따리'를 회화이자 조각이자 퍼포먼스인 매체로 끌어올렸고, 군중 속에 선 자신의 몸을 바늘에 비유한 〈바늘 여인〉으로 이주·정체성·비움을 탐구해 왔습니다. 베니스 비엔날레 한국관(2013) 등 세계 주요 무대에서 활동했으며, 2025년 프랑스 문화예술공로훈장 오피시에를 받았습니다.",
-      fr:"Née en 1957 à Daegu. Formée à l'université Hongik et aux Beaux-Arts de Paris, elle partage sa vie entre New York, Paris et Séoul. Partant de la couture apprise auprès de sa mère, elle élève le « bottari » — ballot de tissus traditionnels coréens — au rang de medium à la fois pictural, sculptural et performatif. Avec « A Needle Woman », son corps dressé dans la foule devient une aiguille. Officier des Arts et des Lettres (2025).",
-      en:"Born 1957 in Daegu. Trained at Hongik University and the École des Beaux-Arts in Paris, she lives between New York, Paris, and Seoul. Beginning from sewing learned at her mother's side, she raised the 'bottari' — a bundle of traditional Korean bedding cloths — into a medium at once painting, sculpture, and performance. In 'A Needle Woman' her still body amid crowds becomes a needle. Officier of France's Order of Arts and Letters (2025)."
+      ko:"1957년 대구 출생. 홍익대와 파리국립미술대학에서 수학했고, 뉴욕·파리·서울을 오가며 활동하는 국제적인 개념미술 작가입니다. 어머니와의 바느질 경험에서 출발해 한국 전통 이불보를 묶은 '보따리'를 회화이자 조각이자 퍼포먼스인 매체로 끌어올렸고, 군중 속에 선 자신의 몸을 바늘에 비유한 〈바늘 여인〉으로 이주·정체성·비움을 탐구해 왔습니다. 베니스 비엔날레 한국관(2013) 등 세계 주요 무대에서 활동했으며, 프랑스 문화예술공로훈장을 받았습니다.",
+      fr:"Née en 1957 à Daegu. Formée à l'université Hongik et aux Beaux-Arts de Paris, elle partage sa vie entre New York, Paris et Séoul. Partant de la couture apprise auprès de sa mère, elle élève le « bottari » — ballot de tissus traditionnels coréens — au rang de medium à la fois pictural, sculptural et performatif. Avec « A Needle Woman », son corps dressé dans la foule devient une aiguille. Décorée de l'ordre des Arts et des Lettres.",
+      en:"Born 1957 in Daegu. Trained at Hongik University and the École des Beaux-Arts in Paris, she lives between New York, Paris, and Seoul. Beginning from sewing learned at her mother's side, she raised the 'bottari' — a bundle of traditional Korean bedding cloths — into a medium at once painting, sculpture, and performance. In 'A Needle Woman' her still body amid crowds becomes a needle. Honored with France's Order of Arts and Letters."
     },
-    works:[{r:1,title:{ko:"우주적 공간",fr:"Espace cosmique"},meta:"72 × 181.5 cm · 2005"}],
+    works:[{r:1,img:"kimsj-1.jpeg",title:{ko:"우주적 공간",fr:"Espace cosmique"},meta:"72 × 181.5 cm · 2005"}],
     rep:[{title:{ko:"보따리 Bottari"},meta:"1990s–"},{title:{ko:"바늘 여인"},meta:"1999/2009"},{title:{ko:"호흡 To Breathe"},meta:"메츠 성당"}]
   },
-  { id:"kimmn", name:{ko:"김명남",fr:"Kim Myung-nam"}, works:[{r:1,title:{ko:"영혼의 기억 53"},meta:"13 × 18 cm · 2008"}] },
-  { id:"parkns", name:{ko:"박능생",fr:"Park Neung-saeng"}, works:[{r:1,title:{ko:"번지점프",fr:"Saut à l'élastique"},meta:"91 × 72.5 cm · 2009"}] },
+  { id:"parkns", name:{ko:"박능생 (Park Neung-saeng)", fr:"Park Neung-saeng", en:"Park Neung-saeng"},
+    role:{ko:"한국화가",fr:"Peintre coréen",en:"Korean Painter"},
+    intro:{
+      ko:"전통 수묵과 모필로 현대 도시를 그리는 '도시산수'로 잘 알려진 한국화가입니다. 관념적 산수에 머물지 않고 직접 걸어 다니며 채집한 도시와 자연의 풍경을 한 화면에 담는데, 여러 시점에서 본 장면을 파노라마처럼 조합하는 '이동시점' 기법이 특징입니다. 빌딩 숲과 산, 강과 도심이 한 폭에서 맞서며 익숙하면서도 낯선 현대인의 정서를 드러냅니다. 〈번지점프〉를 비롯해 〈서울풍경도〉, 〈인왕산 몽유도〉 등 도시 연작을 이어오고 있습니다.",
+      fr:"Peintre coréen connu pour son « paysage urbain » (dosi-sansu), peint au lavis et au pinceau traditionnels. Refusant le paysage purement idéel, il compose en panorama des scènes de ville et de nature qu'il a lui-même arpentées, selon une technique de « points de vue mobiles ». Forêts de tours, montagnes, fleuves et centre-ville se confrontent sur une même toile.",
+      en:"A Korean painter known for his 'urban landscape' (dosi-sansu), painted with traditional ink and brush. Rather than an idealized landscape, he composes panoramas of city and nature scenes he has walked himself, using a 'shifting viewpoint' technique. Skyscrapers, mountains, rivers, and downtown confront each other on a single surface."
+    },
+    works:[{r:1,img:"parkns-1.jpeg",title:{ko:"번지점프",fr:"Saut à l'élastique"},meta:"91 × 72.5 cm · 2009"},{r:1,img:"parkns-2.jpeg",title:{ko:"번지점프",fr:"Saut à l'élastique"},meta:"91 × 72.5 cm · 2009"}],
+    rep:[{title:{ko:"서울풍경도"},meta:"도시산수"},{title:{ko:"인왕산 몽유도"},meta:""}]
+  },
 ];
 
-const LANGS = [["ko","한국어"],["fr","Français"],["en","English"],["es","Español"],["zh","中文"],["ru","Русский"],["ar","العربية"]];
+const LANGS = [["ko","한국어"],["fr","Français"],["en","English"]];
 let lang="ko", view="list", curId=null, tab="artist", menuOpen=false;
 const t = (o)=> !o ? "" : (o[lang] || o.en || o.ko);
 const cur = ()=> ARTISTS.find(a=>a.id===curId);
+const firstImg = (a)=> { const w=a.works.find(x=>x.img); return w?w.img:null; };
 
 function render(){
   const [kicker,title] = t(UI.header);
@@ -224,15 +302,22 @@ function render(){
   if(view==="list"){
     const rows = ARTISTS.map(a=>{
       const w = a.works.map(x=>t(x.title)).join(", ");
+      const im = firstImg(a);
+      const av = im ? `<img src="${IMG_BASE}${im}" alt="" onerror="this.parentNode.innerHTML='${I.person.replace(/'/g,"\\'")}'">` : I.person;
       return `<div class="artist-row" onclick="open_('${a.id}')">
-        <div class="row-av">${I.person}</div>
+        <div class="row-av">${av}</div>
         <div class="row-main"><div class="row-name">${t(a.name)}</div><div class="row-work">${w}</div></div>
         <div class="row-chev">›</div></div>`;
     }).join("");
     body = `<div class="floor-sub">${t(UI.floorSub)}</div><div class="list">${rows}</div>`;
   } else {
     const a = cur();
-    const wc = (w)=>`<div class="work"><div class="work-img">${I.palette}<span>${t(UI.placeholder)}</span></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+    const wc = (w)=>{
+      const inner = w.img
+        ? `<img src="${IMG_BASE}${w.img}" alt="${t(w.title)}" onerror="this.parentNode.innerHTML='${I.palette.replace(/'/g,"\\'")}<span>${t(UI.placeholder)}</span>'">`
+        : `${I.palette}<span>${t(UI.placeholder)}</span>`;
+      return `<div class="work"><div class="work-img">${inner}</div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+    };
     const artistTab = `
       <div class="profile"><div class="avatar">${I.person}</div><div class="artist-name">${t(a.name)}</div>${a.role?`<div class="artist-role">${t(a.role)}</div>`:''}</div>
       <div class="card"><div class="card-label">${I.info}<span>${t(UI.introLabel)}</span></div>${a.intro?`<p>${t(a.intro)}</p>`:`<p class="todo">${t(UI.todoIntro)}</p>`}</div>
