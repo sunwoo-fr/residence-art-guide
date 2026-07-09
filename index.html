@@ -15,7 +15,8 @@
   body.fr h1, body.fr .work-meta-title{ font-family:Georgia,"Times New Roman",serif; }
 
   .topbar{ background:#0d0d0d; height:46px; display:flex; align-items:center; padding:0 18px; }
-  .back{ color:#fff; font-size:26px; line-height:1; cursor:pointer; opacity:.95; visibility:hidden; }
+  .back{ color:#fff; font-size:16px; font-weight:600; line-height:1; cursor:pointer; opacity:.95; visibility:hidden; display:flex; align-items:center; gap:4px; }
+  .back .ar{ font-size:24px; }
   .back.show{ visibility:visible; }
 
   header{ padding:20px 22px 0; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
@@ -96,7 +97,9 @@
   .lb-close:hover{ opacity:1; }
 
   .bottombar{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:820px; background:linear-gradient(transparent, var(--bg) 30%); padding:16px 18px 22px; }
-  .bottom-btn{ width:100%; background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.06); color:var(--ink); }
+  .bottom-row{ display:flex; gap:10px; }
+  .bottom-btn{ flex:1; background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.06); color:var(--ink); }
+  .bottom-btn.home{ background:var(--navy); color:#fff; border-color:var(--navy); flex:0 0 auto; padding:20px 22px; }
   .bottom-btn svg{ width:22px; height:22px; }
 </style>
 
@@ -106,6 +109,7 @@ const I = {
   person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/></svg>',
   info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg>',
   quote:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 7c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6L4 18c2.8-.3 5-2.7 5-5.8V10C9 8.3 7.7 7 6 7zm9 0c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6l.7 2c2.8-.3 5-2.7 5-5.8V10c0-1.7-1.3-3-3-3z"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>',
 };
 
 const IMG_BASE = "images/";
@@ -121,6 +125,8 @@ const UI = {
   residenceLabel:{ ko:"관저 소장", fr:"Collection", en:"In Residence" },
   repLabel:{ ko:"대표작", fr:"Œuvres majeures", en:"Major Works" },
   placeholder:{ ko:"사진 준비 중", fr:"Photo à venir", en:"Photo coming" },
+  backLabel:{ ko:"목록", fr:"Liste", en:"List" },
+  homeLabel:{ ko:"작가 목록으로", fr:"Retour à la liste", en:"Back to list" },
   todoIntro:{ ko:"소개글 준비 중입니다.", fr:"Présentation à venir.", en:"Introduction coming soon." }
 };
 
@@ -344,19 +350,18 @@ function render(){
       ${a.note?`<div class="note"><div class="card-label">${I.quote}<span>${t(UI.noteLabel)}</span></div>${t(a.note).map(p=>`<p>"${p}"</p>`).join("")}</div>`:''}`;
     const worksTab = `
       <div class="works-section-title">${t(UI.residenceLabel).toUpperCase()}</div>
-      <div class="works-grid">${a.works.map(wc).join("")}</div>
-      ${a.rep?`<div class="works-section-title" style="margin-top:22px">${t(UI.repLabel).toUpperCase()}</div><div class="works-grid">${a.rep.map(wc).join("")}</div>`:''}`;
+      <div class="works-grid">${a.works.map(wc).join("")}</div>`;
     body = `
       <div class="tabs">
         <div class="tab ${tab==='works'?'active':''}" onclick="setTab('works')">${I.palette}${t(UI.tabWorks)}</div>
         <div class="tab ${tab==='artist'?'active':''}" onclick="setTab('artist')">${I.person}${t(UI.tabArtist)}</div>
       </div>
       <main>${tab==='artist'?artistTab:worksTab}</main>
-      <div class="bottombar"><div class="bottom-btn" onclick="setTab('${tab==='artist'?'works':'artist'}')">${tab==='artist'?I.palette+t(UI.tabWorks):I.person+t(UI.tabArtist)}</div></div>`;
+      <div class="bottombar"><div class="bottom-row"><div class="bottom-btn home" onclick="goList()">${I.home}<span>${t(UI.homeLabel)}</span></div><div class="bottom-btn" onclick="setTab('${tab==='artist'?'works':'artist'}')">${tab==='artist'?I.palette+t(UI.tabWorks):I.person+t(UI.tabArtist)}</div></div></div>`;
   }
 
   app.innerHTML = `
-    <div class="topbar"><div class="back ${view==='detail'?'show':''}" onclick="goList()">‹</div></div>
+    <div class="topbar"><div class="back ${view==='detail'?'show':''}" onclick="goList()"><span class="ar">‹</span><span>${t(UI.backLabel)}</span></div></div>
     <header>
       <div><div class="kicker">${kicker}</div><h1>${title}</h1></div>
       <div class="lang-wrap"><div class="lang-btn" onclick="toggleMenu(event)">🌐 <span>${lang.toUpperCase()}</span> <span class="chev">▾</span></div><div class="lang-menu ${menuOpen?'open':''}">${langMenu}</div></div>
