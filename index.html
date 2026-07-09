@@ -109,6 +109,7 @@ const I = {
 };
 
 const IMG_BASE = "images/";
+let PLACEHOLDER_HTML = "";
 
 const UI = {
   header:{ ko:["주한 프랑스 대사관저","작품 가이드"], fr:["RÉSIDENCE DE FRANCE","Guide des Œuvres"], en:["RESIDENCE OF FRANCE","Art Guide"] },
@@ -310,6 +311,7 @@ const cur = ()=> ARTISTS.find(a=>a.id===curId);
 const firstImg = (a)=> { const w=a.works.find(x=>x.img); return w?w.img:null; };
 
 function render(){
+  PLACEHOLDER_HTML = I.palette+`<span>${t(UI.placeholder)}</span>`;
   const [kicker,title] = t(UI.header);
   document.body.className = (lang==="fr"?"fr ":"") + (view==="detail"?"detail":"");
   const app = document.getElementById("app");
@@ -320,7 +322,7 @@ function render(){
     const rows = ARTISTS.map(a=>{
       const w = a.works.map(x=>t(x.title)).join(", ");
       const im = firstImg(a);
-      const av = im ? `<img src="${IMG_BASE}${im}" alt="" onerror="this.parentNode.innerHTML='${I.person.replace(/'/g,"\\'")}'">` : I.person;
+      const av = im ? `<img src="${IMG_BASE}${im}" alt="" onerror="avFail(this)">` : I.person;
       return `<div class="artist-row" onclick="open_('${a.id}')">
         <div class="row-av">${av}</div>
         <div class="row-main"><div class="row-name">${t(a.name)}</div><div class="row-work">${w}</div></div>
@@ -329,13 +331,12 @@ function render(){
     body = `<div class="floor-sub">${t(UI.floorSub)}</div><div class="list">${rows}</div>`;
   } else {
     const a = cur();
-    const wc = (w)=>{
-      const src = w.img ? IMG_BASE+w.img : "";
-      const inner = w.img
-        ? `<img src="${src}" alt="${t(w.title)}" onerror="this.parentNode.innerHTML='${I.palette.replace(/'/g,"\\'")}<span>${t(UI.placeholder)}</span>';this.parentNode.classList.remove('clickable')">`
-        : `${I.palette}<span>${t(UI.placeholder)}</span>`;
-      const clk = w.img ? ` clickable" onclick="openLB('${src}','${t(w.title).replace(/'/g,"\\'")}','${(w.meta||'').replace(/'/g,"\\'")}')` : `"`;
-      return `<div class="work"><div class="work-img${clk}>${inner}</div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+    const wc = (w,idx)=>{
+      if(w.img){
+        const src = IMG_BASE+w.img;
+        return `<div class="work"><div class="work-img clickable" onclick="openLB('${src}',${JSON.stringify(t(w.title))},${JSON.stringify(w.meta||'')})"><img src="${src}" alt="" onerror="imgFail(this)"></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
+      }
+      return `<div class="work"><div class="work-img">${I.palette}<span>${t(UI.placeholder)}</span></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
     };
     const artistTab = `
       <div class="profile"><div class="avatar">${I.person}</div><div class="artist-name">${t(a.name)}</div>${a.role?`<div class="artist-role">${t(a.role)}</div>`:''}</div>
@@ -366,11 +367,18 @@ function render(){
       <div class="lb-cap"><div class="t" id="lb-t"></div><div class="m" id="lb-m"></div></div>
     </div>`;
 }
+function imgFail(el){
+  const box = el.parentNode;
+  box.classList.remove("clickable");
+  box.removeAttribute("onclick");
+  box.innerHTML = PLACEHOLDER_HTML;
+}
+function avFail(el){ el.parentNode.innerHTML = I.person; }
 function openLB(src,title,meta){
   const lb=document.getElementById("lb");
   document.getElementById("lb-img").src=src;
-  document.getElementById("lb-t").textContent=title;
-  document.getElementById("lb-m").textContent=meta;
+  document.getElementById("lb-t").textContent=title||"";
+  document.getElementById("lb-m").textContent=meta||"";
   lb.classList.add("open");
 }
 function closeLB(e,force){ if(force || e.target.id==="lb" || e.target.classList.contains("lb-close")){ document.getElementById("lb").classList.remove("open"); } }
