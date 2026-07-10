@@ -72,6 +72,17 @@
   .note p{ font-style:italic; font-size:18px; line-height:1.8; color:#33363f; }
   .note p + p{ margin-top:18px; }
 
+  .links{ margin-bottom:18px; }
+  .links-label{ font-size:13px; letter-spacing:1px; font-weight:700; color:#8a8a87; margin:2px 4px 12px; }
+  .link-card{ display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin-bottom:10px; text-decoration:none; color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .link-card:hover{ border-color:var(--navy); }
+  .link-ic{ width:38px; height:38px; border-radius:10px; background:#eef1f6; display:flex; align-items:center; justify-content:center; color:var(--navy); flex-shrink:0; }
+  .link-ic svg{ width:20px; height:20px; }
+  .link-txt{ flex:1; min-width:0; }
+  .link-name{ font-size:16px; font-weight:700; }
+  .link-host{ font-size:13px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .link-arrow{ color:#cfcfcc; font-size:20px; }
+
   .works-section-title{ font-size:14px; letter-spacing:1px; font-weight:700; color:#8a8a87; margin:6px 4px 14px; }
   .works-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
   @media (min-width:620px){ .works-grid{ grid-template-columns:1fr 1fr 1fr; } }
@@ -110,6 +121,7 @@ const I = {
   info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg>',
   quote:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 7c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6L4 18c2.8-.3 5-2.7 5-5.8V10C9 8.3 7.7 7 6 7zm9 0c-2 0-3.5 1.6-3.5 3.6 0 1.8 1.3 3 3 3 .3 0 .6 0 .8-.1-.4 1.4-1.6 2.4-3 2.6l.7 2c2.8-.3 5-2.7 5-5.8V10c0-1.7-1.3-3-3-3z"/></svg>',
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>',
+  ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg>',
 };
 
 const IMG_BASE = "images/";
@@ -127,6 +139,7 @@ const UI = {
   placeholder:{ ko:"사진 준비 중", fr:"Photo à venir", en:"Photo coming" },
   backLabel:{ ko:"목록", fr:"Liste", en:"List" },
   homeLabel:{ ko:"작가 목록으로", fr:"Retour à la liste", en:"Back to list" },
+  linksLabel:{ ko:"더 알아보기", fr:"En savoir plus", en:"Learn more" },
   todoIntro:{ ko:"소개글 준비 중입니다.", fr:"Présentation à venir.", en:"Introduction coming soon." }
 };
 
@@ -164,6 +177,7 @@ const ARTISTS = [
       en:["With each brushstroke I would think, 'this is feeding my children a spoonful of rice,' and with the next, 'this is stroking my children's hair.' That is how I painted."]
     },
     works:[{r:1,img:"rhee-1.jpeg",title:{ko:"La Ville de Vierge"},meta:"195 × 130 cm"}],
+    links:[{name:"진주시립 이성자미술관",url:"https://www.jinju.go.kr/rheesjmuseum/"}],
     rep:[{title:{ko:"여성과 대지"},meta:"1960s"},{title:{ko:"지구 반대편으로 가는 길"},meta:"1980–94"},{title:{ko:"우주"},meta:"1995–2008"}]
   },
   { id:"leeks", name:{ko:"이강소 (Lee Kang-so)", fr:"Lee Kang-so", en:"Lee Kang-so"},
@@ -209,6 +223,7 @@ const ARTISTS = [
       en:["The most important thing is the 'encounter'. My work is not a finished object existing alone. It comes alive only in relation to the place, the time, and the viewer.","To mark a point or draw a line is to inscribe the rhythm of my body onto the infinite void of the canvas — a conversation with the outer world and a breath with the universe. I do not wish merely to paint; I wish to make the empty space vibrate."]
     },
     works:[{r:1,img:"leeuf-1.jpeg",title:{ko:"대응",fr:"Correspondance"},meta:"79 × 109 cm"}],
+    links:[{name:"이우환 공간 · 부산시립미술관",url:"https://art.busan.go.kr/spaceleeufan/index.nm"},{name:"Lee Ufan Arles",url:"https://www.leeufanarles.org"}],
     rep:[{title:{ko:"From Point"},meta:"1976"},{title:{ko:"From Line"},meta:"1978"},{title:{ko:"Dialogue"},meta:"2008"},{title:{ko:"Relatum"},meta:"조각 · sculpture"}]
   },
   { id:"kimcy", name:{ko:"김창열 (Kim Tschang-yeul)", fr:"Kim Tschang-yeul", en:"Kim Tschang-yeul"},
@@ -224,6 +239,7 @@ const ARTISTS = [
       en:["It was one day in my poor Paris studio. Unhappy with a painting I'd worked on all night, I sprayed water behind the canvas to recover the paint. The water had beaded up and was glittering in the morning light. In that instant, trembling with a fullness of being, I met the water drop."]
     },
     works:[{r:1,img:"kimcy-1.jpeg",title:{ko:"물방울",fr:"Goutte d'eau"},meta:"89 × 116 cm"}],
+    links:[{name:"제주도립 김창열미술관",url:"https://kimtschang-yeul.jeju.go.kr/"}],
     rep:[{title:{ko:"회귀 Recurrence"},meta:"1989"},{title:{ko:"Water Drops"},meta:"1974"},{title:{ko:"Bell"},meta:"2003"}]
   },
   { id:"moon", name:{ko:"문신 (Moon Shin)", fr:"Moon Shin", en:"Moon Shin"},
@@ -239,6 +255,7 @@ const ARTISTS = [
       en:["If I wish for one thing, it is that these forms might ultimately carry the very meaning of life. Man, while living in the present, dreams of an invisible future — the universe."]
     },
     works:[{r:1,img:"moon-1.jpeg",title:{ko:"에스키스",fr:"Esquisse"},meta:"55 × 35 cm · 조각 초안"},{r:1,img:"moon-2.jpeg",title:{ko:"미정",fr:"Sans titre"},meta:"53 × 23 × 88 cm · 조각"}],
+    links:[{name:"창원시립마산문신미술관",url:"https://www.changwon.go.kr/moonshin/"}],
     rep:[{title:{ko:"태양의 인간"},meta:"1970 · 발카레스"},{title:{ko:"Symmetry"},meta:"브론즈"}]
   },
   { id:"leesi", name:{ko:"이승일 (Lee Seung-il)", fr:"Lee Seung-il", en:"Lee Seung-il"},
@@ -290,6 +307,7 @@ const ARTISTS = [
       en:"Born 1931 in Yecheon, died 2023. A graduate of Hongik University, he moved from Art Informel ('Primordials') through an Op-art-inflected abstraction ('Hereditarus') before launching his 'Écriture (Myobop)' series in 1967, becoming the master of Korean monochrome painting (Dansaekhwa). The endless drawing of pencil lines and pushing of soaked hanji paper is itself a discipline and an emptying of the self."
     },
     works:[{r:1,img:"park-1.jpeg",title:{ko:"Ecriture Series I #31"},meta:"76 × 56 cm · 1994"}],
+    links:[{name:"박서보재단 PARKSEOBO FOUNDATION",url:"https://parkseobofoundation.org/"}],
     rep:[{title:{ko:"묘법 No.01-77"},meta:"1977"},{title:{ko:"원형질"},meta:"1960s"},{title:{ko:"후기 묘법"},meta:"2000s"}]
   },
   { id:"kimkl", name:{ko:"김구림 (Kim Ku-lim)", fr:"Kim Ku-lim", en:"Kim Ku-lim"},
@@ -310,6 +328,7 @@ const ARTISTS = [
       en:"Born 1957 in Daegu. Holding a BFA and MFA from Hongik University, she studied printmaking at the École des Beaux-Arts in Paris as a French government scholar. A conceptual artist living between New York, Paris, and Seoul, she raised the 'bottari' — a bundle of traditional Korean bedding cloths — into a medium at once painting, sculpture, and performance; in 'A Needle Woman' her still body amid crowds becomes a needle. Featured at the Korean Pavilion of the Venice Biennale (2013) and the Bourse de Commerce in Paris (2024). Chevalier (2017) then Officier (2025) of France's Order of Arts and Letters."
     },
     works:[{r:1,img:"kimsj-1.jpeg",title:{ko:"우주적 공간",fr:"Espace cosmique"},meta:"72 × 181.5 cm · 2005"}],
+    links:[{name:"Kimsooja Studio (공식 홈페이지)",url:"https://www.kimsooja.com"}],
     rep:[{title:{ko:"보따리 Bottari"},meta:"1990s–"},{title:{ko:"바늘 여인"},meta:"1999/2009"},{title:{ko:"호흡 To Breathe"},meta:"메츠 성당"}]
   },
   { id:"parkns", name:{ko:"박능생 (Park Neung-saeng)", fr:"Park Neung-saeng", en:"Park Neung-saeng"},
@@ -358,10 +377,14 @@ function render(){
       }
       return `<div class="work"><div class="work-img">${I.palette}<span>${t(UI.placeholder)}</span></div><div class="work-info">${w.r?`<div class="work-badge">${t(UI.residenceLabel)}</div>`:''}<div class="work-title work-meta-title">${t(w.title)}</div><div class="work-meta">${w.meta||''}</div></div></div>`;
     };
+    const linksBlock = (a.links && a.links.length)
+      ? `<div class="links"><div class="links-label">${t(UI.linksLabel).toUpperCase()}</div>${a.links.map(l=>`<a class="link-card" href="${l.url}" target="_blank" rel="noopener noreferrer"><div class="link-ic">${I.ext}</div><div class="link-txt"><div class="link-name">${l.name}</div><div class="link-host">${l.url.replace(/^https?:\/\//,'').replace(/\/.*$/,'')}</div></div><div class="link-arrow">›</div></a>`).join("")}</div>`
+      : '';
     const artistTab = `
       <div class="profile"><div class="avatar">${I.person}</div><div class="artist-name">${t(a.name)}</div>${a.role?`<div class="artist-role">${t(a.role)}</div>`:''}</div>
       <div class="card"><div class="card-label">${I.info}<span>${t(UI.introLabel)}</span></div>${a.intro?`<p>${t(a.intro)}</p>`:`<p class="todo">${t(UI.todoIntro)}</p>`}</div>
-      ${a.note?`<div class="note"><div class="card-label">${I.quote}<span>${t(UI.noteLabel)}</span></div>${t(a.note).map(p=>`<p>"${p}"</p>`).join("")}</div>`:''}`;
+      ${a.note?`<div class="note"><div class="card-label">${I.quote}<span>${t(UI.noteLabel)}</span></div>${t(a.note).map(p=>`<p>"${p}"</p>`).join("")}</div>`:''}
+      ${linksBlock}`;
     const worksTab = `
       <div class="works-section-title">${t(UI.residenceLabel).toUpperCase()}</div>
       <div class="works-grid">${a.works.map(wc).join("")}</div>`;
