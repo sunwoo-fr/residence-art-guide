@@ -1,3 +1,5 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <div id="app"></div>
 
 <style>
@@ -40,8 +42,8 @@
   .row-av svg{ width:26px; height:26px; }
   .row-av img{ width:100%; height:100%; object-fit:cover; }
   .row-main{ flex:1; min-width:0; }
-  .row-name{ font-size:18px; font-weight:700; }
-  .row-work{ font-size:14px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .row-name{ font-size:19px; font-weight:700; }
+  .row-work{ font-size:15px; color:var(--muted); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .row-chev{ color:#cfcfcc; font-size:22px; }
 
   .tabs{ display:flex; margin-top:18px; border-bottom:1px solid var(--line); }
@@ -64,12 +66,12 @@
   .card{ background:#fff; border-radius:22px; padding:26px 24px; box-shadow:0 1px 3px rgba(0,0,0,.04); margin-bottom:18px; }
   .card-label{ display:flex; align-items:center; gap:9px; font-size:15px; letter-spacing:2px; font-weight:700; color:#8a8a87; margin-bottom:16px; }
   .card-label svg{ width:18px; height:18px; }
-  .card p{ font-size:18px; line-height:1.75; color:#262626; }
+  .card p{ font-size:19px; line-height:1.8; color:#262626; }
   .card p.todo{ color:#b0b0ad; font-style:italic; }
 
   .note{ background:var(--note-bg); border-left:5px solid var(--navy); border-radius:18px; padding:26px 24px; margin-bottom:18px; }
   .note .card-label{ color:var(--navy); }
-  .note p{ font-style:italic; font-size:18px; line-height:1.8; color:#33363f; }
+  .note p{ font-style:italic; font-size:19px; line-height:1.85; color:#33363f; }
   .note p + p{ margin-top:18px; }
 
   .links{ margin-bottom:18px; }
@@ -218,12 +220,12 @@ const ARTISTS = [
       en:"Born in 1936. A master who led Korea's Mono-ha movement, exploring the relationship between 'the made' and 'the unmade'. Through the void of the canvas and the tension of a single point, his work reveals a harmony between Eastern thought and Western minimalism."
     },
     note:{
-      ko:["가장 중요한 것은 '만남'이다. 나의 작품은 홀로 존재하는 완성된 오브제가 아니다. 그것은 놓인 장소와 시간, 그리고 바라보는 관람객과의 관계 속에서 비로소 살아난다.","점을 찍고 선을 긋는 행위는 캔버스라는 무한한 여백에 나의 신체 리듬을 새기는 일이며, 이는 곧 외부 세계와의 대화이자 우주와의 호흡이다. 나는 그림을 그리는 것이 아니라, 캔버스 위의 여백을 진동하게 하고 싶다."],
-      fr:["Le plus important est la 'rencontre'. Mon œuvre n'est pas un objet achevé existant seul. Elle ne prend vie que dans la relation avec le lieu, le temps et le spectateur.","Marquer un point ou tracer une ligne, c'est inscrire le rythme de mon corps dans le vide infini de la toile. C'est une conversation avec le monde extérieur et une respiration avec l'univers. Je ne veux pas simplement peindre ; je veux faire vibrer l'espace vide sur la toile."],
-      en:["The most important thing is the 'encounter'. My work is not a finished object existing alone. It comes alive only in relation to the place, the time, and the viewer.","To mark a point or draw a line is to inscribe the rhythm of my body onto the infinite void of the canvas — a conversation with the outer world and a breath with the universe. I do not wish merely to paint; I wish to make the empty space vibrate."]
+      ko:["내가 말하는 여백은 동양화에서 흔히 얘기하는 여백과는 다릅니다. 그린 부분과 그리지 않은 부분, 만든 것과 만들어지지 않은 것, 내부와 외부가 자극적인 관계로 서로 작용하고 울려 퍼지는 것, 자기와 타자의 만남에 의해 열리는 공간이 여백입니다.","나는 완벽하고 견고하며 잘난 체 버티는 작품을 좋아하지 않아요. 있게 하려는 힘과 없애려는 힘의 치열한 맞섬은 아름다운 겨룸입니다. 그저 내가 '예술'이라는 것에 작은 힌트를 주는 그런 존재로 기억되기를 바랄 뿐입니다."],
+      fr:["Le vide dont je parle n'est pas celui de la peinture orientale classique. C'est un espace qui s'ouvre là où la partie peinte et la partie non peinte, le fait et le non-fait, l'intérieur et l'extérieur agissent l'un sur l'autre et résonnent — dans la rencontre de soi et de l'autre.","Je n'aime pas les œuvres parfaites, solides, qui se donnent de grands airs. L'affrontement entre la force qui veut faire exister et celle qui veut effacer est une belle lutte. Je souhaite seulement qu'on se souvienne de moi comme de quelqu'un qui donne un petit indice sur ce qu'est « l'art »."],
+      en:["The void I speak of is not the void of classical Eastern painting. It is a space that opens where the painted and the unpainted, the made and the unmade, the inside and the outside act upon each other and resonate — in the encounter of self and other.","I do not care for works that are perfect, solid, and full of themselves. The fierce confrontation between the force that wills things into being and the force that would erase them is a beautiful contest. I wish only to be remembered as someone who offers a small hint about what 'art' is."]
     },
     works:[{r:1,img:"leeuf-1.jpeg",title:{ko:"대응",fr:"Correspondance"},meta:"79 × 109 cm"}],
-    links:[{name:"이우환 공간 · 부산시립미술관",url:"https://art.busan.go.kr/spaceleeufan/index.nm"},{name:"Lee Ufan Arles · 작품",url:"https://en.leeufan-arles.org/les-oeuvres"}],
+    links:[{name:"Studio Lee Ufan (공식 홈페이지)",url:"https://www.studioleeufan.org/"},{name:"이우환 공간 · 부산시립미술관",url:"https://art.busan.go.kr/spaceleeufan/index.nm"},{name:"Lee Ufan Arles · 작품",url:"https://en.leeufan-arles.org/les-oeuvres"}],
     rep:[{title:{ko:"From Point"},meta:"1976"},{title:{ko:"From Line"},meta:"1978"},{title:{ko:"Dialogue"},meta:"2008"},{title:{ko:"Relatum"},meta:"조각 · sculpture"}]
   },
   { id:"kimcy", name:{ko:"김창열 (Kim Tschang-yeul)", fr:"Kim Tschang-yeul", en:"Kim Tschang-yeul"},
