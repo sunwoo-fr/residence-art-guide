@@ -7,6 +7,7 @@
   :root{
     --bg:#f4f4f3; --card:#ffffff; --note-bg:#efefee; --navy:#16213e;
     --ink:#1c1c1c; --muted:#9b9b9b; --line:#e8e8e6;
+    --fs:1;
   }
   html,body{ background:var(--bg); }
   body{
@@ -22,6 +23,10 @@
   .back.show{ visibility:visible; }
 
   header{ padding:20px 22px 0; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .hd-tools{ display:flex; gap:8px; align-items:center; flex-shrink:0; margin-top:6px; }
+  .fs-btn{ display:flex; align-items:center; background:#fff; border:1px solid var(--line); border-radius:24px; padding:11px 14px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.03); font-weight:700; gap:3px; }
+  .fs-btn .s{ font-size:13px; color:#999; }
+  .fs-btn .l{ font-size:19px; color:var(--ink); }
   .kicker{ font-size:13px; color:var(--muted); letter-spacing:.5px; font-weight:600; }
   h1{ font-size:30px; font-weight:800; margin-top:4px; letter-spacing:-.5px; }
   .lang-wrap{ position:relative; flex-shrink:0; margin-top:6px; }
@@ -42,8 +47,8 @@
   .row-av svg{ width:26px; height:26px; }
   .row-av img{ width:100%; height:100%; object-fit:cover; }
   .row-main{ flex:1; min-width:0; }
-  .row-name{ font-size:19px; font-weight:700; }
-  .row-work{ font-size:15px; color:var(--muted); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .row-name{ font-size:calc(19px * var(--fs)); font-weight:700; }
+  .row-work{ font-size:calc(15px * var(--fs)); color:var(--muted); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .row-chev{ color:#cfcfcc; font-size:22px; }
 
   .tabs{ display:flex; margin-top:18px; border-bottom:1px solid var(--line); }
@@ -66,12 +71,12 @@
   .card{ background:#fff; border-radius:22px; padding:26px 24px; box-shadow:0 1px 3px rgba(0,0,0,.04); margin-bottom:18px; }
   .card-label{ display:flex; align-items:center; gap:9px; font-size:15px; letter-spacing:2px; font-weight:700; color:#8a8a87; margin-bottom:16px; }
   .card-label svg{ width:18px; height:18px; }
-  .card p{ font-size:19px; line-height:1.8; color:#262626; }
+  .card p{ font-size:calc(20px * var(--fs)); line-height:1.8; color:#262626; }
   .card p.todo{ color:#b0b0ad; font-style:italic; }
 
   .note{ background:var(--note-bg); border-left:5px solid var(--navy); border-radius:18px; padding:26px 24px; margin-bottom:18px; }
   .note .card-label{ color:var(--navy); }
-  .note p{ font-style:italic; font-size:19px; line-height:1.85; color:#33363f; }
+  .note p{ font-style:italic; font-size:calc(20px * var(--fs)); line-height:1.85; color:#33363f; }
   .note p + p{ margin-top:18px; }
 
   .links{ margin-bottom:18px; }
@@ -142,6 +147,8 @@ const UI = {
   backLabel:{ ko:"목록", fr:"Liste", en:"List" },
   homeLabel:{ ko:"작가 목록으로", fr:"Retour à la liste", en:"Back to list" },
   linksLabel:{ ko:"더 알아보기", fr:"En savoir plus", en:"Learn more" },
+  fsSmall:{ ko:"가", fr:"A", en:"A" },
+  fsLarge:{ ko:"가", fr:"A", en:"A" },
   todoIntro:{ ko:"소개글 준비 중입니다.", fr:"Présentation à venir.", en:"Introduction coming soon." }
 };
 
@@ -346,7 +353,7 @@ const ARTISTS = [
 ];
 
 const LANGS = [["ko","한국어"],["fr","Français"],["en","English"]];
-let lang="ko", view="list", curId=null, tab="artist", menuOpen=false;
+let lang="ko", view="list", curId=null, tab="artist", menuOpen=false, fsIdx=0;
 const t = (o)=> !o ? "" : (o[lang] || o.en || o.ko);
 const cur = ()=> ARTISTS.find(a=>a.id===curId);
 const firstImg = (a)=> { const w=a.works.find(x=>x.img); return w?w.img:null; };
@@ -403,7 +410,10 @@ function render(){
     <div class="topbar"><div class="back ${view==='detail'?'show':''}" onclick="goList()"><span class="ar">‹</span><span>${t(UI.backLabel)}</span></div></div>
     <header>
       <div><div class="kicker">${kicker}</div><h1>${title}</h1></div>
-      <div class="lang-wrap"><div class="lang-btn" onclick="toggleMenu(event)">🌐 <span>${lang.toUpperCase()}</span> <span class="chev">▾</span></div><div class="lang-menu ${menuOpen?'open':''}">${langMenu}</div></div>
+      <div class="hd-tools">
+        <div class="fs-btn" onclick="cycleFS()"><span class="s">${t(UI.fsSmall)}</span><span class="l">${t(UI.fsLarge)}</span></div>
+        <div class="lang-wrap"><div class="lang-btn" onclick="toggleMenu(event)">🌐 <span>${lang.toUpperCase()}</span> <span class="chev">▾</span></div><div class="lang-menu ${menuOpen?'open':''}">${langMenu}</div></div>
+      </div>
     </header>${body}
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-close" onclick="closeLB(event,true)">×</div>
@@ -426,6 +436,11 @@ function openLB(src,title,meta){
   lb.classList.add("open");
 }
 function closeLB(e,force){ if(force || e.target.id==="lb" || e.target.classList.contains("lb-close")){ document.getElementById("lb").classList.remove("open"); } }
+function cycleFS(){
+  const steps=[1, 1.15, 1.3];
+  fsIdx=(fsIdx+1)%steps.length;
+  document.documentElement.style.setProperty("--fs", steps[fsIdx]);
+}
 function setLang(c){ lang=c; menuOpen=false; render(); }
 function open_(id){ curId=id; view="detail"; tab="artist"; render(); window.scrollTo(0,0); }
 function goList(){ view="list"; render(); window.scrollTo(0,0); }
